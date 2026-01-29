@@ -1,0 +1,7 @@
+{
+  "name": "Karang Taruna Hub",
+  "description": "A modern management platform for Youth Organizations (Karang Taruna) featuring member directories, financial tracking, and AI-powered event planning.",
+  "requestFramePermissions": [
+    "microphone"
+  ]
+}
