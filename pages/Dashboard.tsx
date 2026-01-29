@@ -153,12 +153,12 @@ const Dashboard: React.FC = () => {
             className="flex items-center gap-3 cursor-pointer group p-1 rounded-2xl hover:bg-black/5 transition-colors"
           >
             <div className={`w-12 h-12 rounded-full flex items-center justify-center overflow-hidden border-2 ${theme.name === 'default' ? 'border-slate-200' : 'border-white/50'}`}>
-               {user?.photoURL ? <img src={user.photoURL} alt="Avatar" className="w-full h-full object-cover"/> : <span className="text-xs font-bold">KT</span>}
+               {user?.photoURL ? <img src={user.photoURL} alt="Avatar" className="w-full h-full object-cover"/> : <span className="text-xs font-bold text-slate-500">KT</span>}
             </div>
             <div>
               <p className={`text-sm font-medium ${theme.name !== 'default' ? 'text-slate-500' : 'text-slate-500'}`}>Halo, {user?.displayName?.split(' ')[0]}</p>
               <h1 className="text-xl font-bold text-slate-900 flex items-center gap-1">
-                 {theme.name === 'independence' ? 'Merdeka! 🇮🇩' : theme.name === 'ramadan' ? 'Marhaban 🌙' : 'Dashboard'}
+                 {theme.name === 'independence' ? 'Merdeka! 🇮🇩' : theme.name === 'ramadan' ? 'Marhaban 🌙' : 'KARTEJI'}
               </h1>
             </div>
           </div>
@@ -175,7 +175,7 @@ const Dashboard: React.FC = () => {
             <div className={`${theme.colors.cardBg} rounded-[32px] p-6 text-white shadow-xl relative overflow-hidden transition-colors duration-500`}>
                 <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full -mr-10 -mt-10 blur-2xl"></div>
                 <div className="relative z-10">
-                <p className="text-white/60 font-medium mb-1">Total Kas Organisasi</p>
+                <p className="text-white/60 font-medium mb-1">Total Kas KARTEJI</p>
                 <h2 className="text-4xl font-bold mb-6">Rp {(stats.balance / 1000).toFixed(0)}rb</h2>
                 
                 <div className="flex gap-3">

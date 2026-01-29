@@ -20,11 +20,20 @@ const Splash: React.FC = () => {
       <div className="absolute bottom-[-10%] left-[-10%] w-64 h-64 bg-purple-600/20 rounded-full blur-3xl"></div>
 
       <div className="relative z-10 flex flex-col items-center">
-        <div className="w-24 h-24 bg-white rounded-3xl flex items-center justify-center mb-6 shadow-2xl shadow-indigo-500/20 animate-bounce-slow">
-           <span className="text-4xl font-bold text-slate-900 tracking-tighter">KT</span>
+        <div className="w-40 h-40 flex items-center justify-center mb-6 animate-bounce-slow">
+           <img 
+             src="/logo.png" 
+             alt="KARTEJI" 
+             className="w-full h-full object-contain drop-shadow-2xl"
+             onError={(e) => {
+               // Fallback if logo.png is missing
+               e.currentTarget.style.display = 'none';
+               e.currentTarget.parentElement!.innerHTML = '<div class="w-24 h-24 bg-white rounded-3xl flex items-center justify-center shadow-2xl shadow-indigo-500/20"><span class="text-3xl font-bold text-slate-900">KARTEJI</span></div>';
+             }}
+           />
         </div>
         
-        <h1 className="text-3xl font-bold text-white mb-2 tracking-tight">Karang Taruna Hub</h1>
+        <h1 className="text-4xl font-bold text-white mb-2 tracking-tight">KARTEJI</h1>
         <p className="text-slate-400 text-sm font-medium">Empowering Youth, Building Future</p>
       </div>
 

@@ -30,10 +30,20 @@ const Login: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-white p-6 flex flex-col justify-center animate-fade-in">
-      <div className="mb-8">
-        <div className="w-12 h-12 bg-slate-900 rounded-2xl flex items-center justify-center text-white font-bold mb-4">KT</div>
+      <div className="mb-8 flex flex-col items-center text-center">
+        <div className="w-24 h-24 mb-4">
+          <img 
+            src="/logo.png" 
+            alt="KARTEJI Logo" 
+            className="w-full h-full object-contain"
+            onError={(e) => {
+               e.currentTarget.style.display = 'none';
+               e.currentTarget.parentElement!.innerHTML = '<div class="w-16 h-16 bg-slate-900 rounded-2xl flex items-center justify-center text-white font-bold text-xl">KT</div>';
+            }}
+          />
+        </div>
         <h1 className="text-3xl font-bold text-slate-900 mb-2">Selamat Datang</h1>
-        <p className="text-slate-500">Silakan masuk untuk melanjutkan.</p>
+        <p className="text-slate-500">Silakan masuk ke aplikasi KARTEJI.</p>
       </div>
 
       {error && (
