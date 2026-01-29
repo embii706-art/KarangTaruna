@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Search, Phone, Mail, MoreHorizontal, Trash2, Edit2 } from 'lucide-react';
+import { Search, Phone, Mail, Trash2, Edit2 } from 'lucide-react';
 import { Input, Button, Modal, Select } from '../components/UI';
 import { Member, MemberRole } from '../types';
-import { collection, onSnapshot, doc, updateDoc, deleteDoc } from 'firebase/firestore';
-import { db } from '../services/firebase';
+import { collection, onSnapshot, doc, updateDoc, deleteDoc, getDoc } from 'firebase/firestore';
+import { db, auth } from '../services/firebase';
 
 const Members: React.FC = () => {
   const [members, setMembers] = useState<Member[]>([]);
@@ -13,13 +13,28 @@ const Members: React.FC = () => {
   // Edit State
   const [editingMember, setEditingMember] = useState<Member | null>(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [currentUserRole, setCurrentUserRole] = useState<MemberRole | null>(null);
 
   useEffect(() => {
-    const unsubscribe = onSnapshot(collection(db, "users"), (snapshot) => {
+    // 1. Listen to members collection
+    const unsubscribeMembers = onSnapshot(collection(db, "users"), (snapshot) => {
       const usersData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Member));
       setMembers(usersData);
     });
-    return () => unsubscribe();
+
+    // 2. Fetch current user role
+    const fetchCurrentUserRole = async () => {
+      if (auth.currentUser) {
+        const docRef = doc(db, "users", auth.currentUser.uid);
+        const docSnap = await getDoc(docRef);
+        if (docSnap.exists()) {
+          setCurrentUserRole(docSnap.data().role as MemberRole);
+        }
+      }
+    };
+    fetchCurrentUserRole();
+
+    return () => unsubscribeMembers();
   }, []);
 
   const handleUpdateRole = async () => {
@@ -51,6 +66,32 @@ const Members: React.FC = () => {
     const matchesFilter = filter === 'All' || m.role === filter;
     return matchesSearch && matchesFilter;
   });
+
+  // Permission Logic
+  const canManageMember = (targetRole: MemberRole) => {
+    if (!currentUserRole) return false;
+
+    // 1. Only Super Admin, Chairman, and Vice Chairman can manage others
+    const allowedManagers = [
+      MemberRole.SUPER_ADMIN,
+      MemberRole.CHAIRMAN,
+      MemberRole.VICE_CHAIRMAN
+    ];
+    
+    if (!allowedManagers.includes(currentUserRole)) {
+      return false;
+    }
+
+    // 2. Chairman and Vice Chairman CANNOT manage Super Admin
+    if (
+      (currentUserRole === MemberRole.CHAIRMAN || currentUserRole === MemberRole.VICE_CHAIRMAN) &&
+      targetRole === MemberRole.SUPER_ADMIN
+    ) {
+      return false;
+    }
+
+    return true;
+  };
 
   return (
     <div className="pt-4 px-4 space-y-6 animate-fade-in pb-24">
@@ -87,14 +128,16 @@ const Members: React.FC = () => {
         {filteredMembers.map((member) => (
           <div key={member.id} className="bg-white p-4 rounded-[28px] flex flex-col items-center text-center gap-3 border border-slate-50 shadow-sm relative group">
             {/* Admin Controls */}
-            <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity">
-               <button onClick={() => { setEditingMember(member); setIsEditModalOpen(true); }} className="p-1.5 bg-slate-100 rounded-full text-slate-600 hover:bg-slate-200 mr-1">
-                 <Edit2 className="w-3 h-3"/>
-               </button>
-               <button onClick={() => handleDeleteMember(member.id)} className="p-1.5 bg-red-50 rounded-full text-red-500 hover:bg-red-100">
-                 <Trash2 className="w-3 h-3"/>
-               </button>
-            </div>
+            {canManageMember(member.role) && (
+              <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity flex gap-1 z-10">
+                 <button onClick={() => { setEditingMember(member); setIsEditModalOpen(true); }} className="p-1.5 bg-slate-100 rounded-full text-slate-600 hover:bg-slate-200">
+                   <Edit2 className="w-3 h-3"/>
+                 </button>
+                 <button onClick={() => handleDeleteMember(member.id)} className="p-1.5 bg-red-50 rounded-full text-red-500 hover:bg-red-100">
+                   <Trash2 className="w-3 h-3"/>
+                 </button>
+              </div>
+            )}
 
             <div className="relative">
                 <img src={member.avatar} alt={member.name} className="w-20 h-20 rounded-full object-cover border-4 border-slate-50 shadow-md" />

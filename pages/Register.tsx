@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { Mail, Lock, User, Briefcase, ArrowRight, AlertCircle } from 'lucide-react';
+import { Mail, Lock, User, ArrowRight, AlertCircle } from 'lucide-react';
 import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
-import { doc, setDoc } from 'firebase/firestore';
+import { doc, setDoc, collection, getDocs, query, limit } from 'firebase/firestore';
 import { auth, db } from '../services/firebase';
-import { Input, Button, Select } from '../components/UI';
+import { Input, Button } from '../components/UI';
 import { MemberRole } from '../types';
 
 const Register: React.FC = () => {
@@ -15,8 +15,7 @@ const Register: React.FC = () => {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
-    password: '',
-    role: MemberRole.MEMBER
+    password: ''
   });
 
   const handleRegister = async (e: React.FormEvent) => {
@@ -25,22 +24,28 @@ const Register: React.FC = () => {
     setError('');
 
     try {
-      // 1. Create Auth User
+      // 1. Determine Role (First user = SUPER_ADMIN, others = MEMBER)
+      const q = query(collection(db, "users"), limit(1));
+      const querySnapshot = await getDocs(q);
+      const isFirstUser = querySnapshot.empty;
+      const assignedRole = isFirstUser ? MemberRole.SUPER_ADMIN : MemberRole.MEMBER;
+
+      // 2. Create Auth User
       const userCredential = await createUserWithEmailAndPassword(auth, formData.email, formData.password);
       const user = userCredential.user;
 
-      // 2. Update Auth Profile
+      // 3. Update Auth Profile
       await updateProfile(user, {
         displayName: formData.name,
         photoURL: `https://ui-avatars.com/api/?name=${encodeURIComponent(formData.name)}&background=random`
       });
 
-      // 3. Create User Document in Firestore
+      // 4. Create User Document in Firestore
       await setDoc(doc(db, "users", user.uid), {
         id: user.uid,
         name: formData.name,
         email: formData.email,
-        role: formData.role,
+        role: assignedRole,
         avatar: user.photoURL,
         joinedAt: new Date().toISOString(),
         status: 'active'
@@ -100,22 +105,6 @@ const Register: React.FC = () => {
                 value={formData.password}
                 onChange={e => setFormData({...formData, password: e.target.value})}
             />
-        </div>
-        <div>
-             <label className="block text-sm font-bold text-slate-700 mb-2">Posisi / Jabatan</label>
-             <Select 
-                icon={<Briefcase className="w-5 h-5"/>}
-                value={formData.role}
-                onChange={e => setFormData({...formData, role: e.target.value as MemberRole})}
-             >
-                <option value={MemberRole.MEMBER}>{MemberRole.MEMBER}</option>
-                <option value={MemberRole.SECRETARY}>{MemberRole.SECRETARY}</option>
-                <option value={MemberRole.TREASURER}>{MemberRole.TREASURER}</option>
-                <option value={MemberRole.VICE_CHAIRMAN}>{MemberRole.VICE_CHAIRMAN}</option>
-                <option value={MemberRole.CHAIRMAN}>{MemberRole.CHAIRMAN}</option>
-                <option value={MemberRole.SUPER_ADMIN}>{MemberRole.SUPER_ADMIN}</option>
-             </Select>
-             <p className="text-[10px] text-slate-400 mt-1 ml-1">*Pilih sesuai arahan pengurus.</p>
         </div>
 
         <Button className="w-full mt-4" type="submit" disabled={loading}>
