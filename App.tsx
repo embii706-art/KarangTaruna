@@ -11,6 +11,7 @@ import Reports from './pages/Reports';
 import Splash from './pages/Splash';
 import Login from './pages/Login';
 import Register from './pages/Register';
+import Profile from './pages/Profile';
 
 const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const location = useLocation();
@@ -29,8 +30,8 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     return () => unsubscribe();
   }, [navigate, location.pathname]);
 
-  // Hide navigation on auth pages
-  const hideNav = ['/', '/login', '/register'].includes(location.pathname);
+  // Hide navigation on auth pages and Profile page
+  const hideNav = ['/', '/login', '/register', '/profile'].includes(location.pathname);
 
   const navItems = [
     { label: 'Home', icon: Home, path: '/dashboard' },
@@ -86,6 +87,7 @@ const App: React.FC = () => {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/profile" element={<Profile />} />
           <Route path="/members" element={<Members />} />
           <Route path="/finance" element={<Finance />} />
           <Route path="/events" element={<Events />} />
