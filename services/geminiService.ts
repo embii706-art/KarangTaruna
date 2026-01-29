@@ -1,10 +1,17 @@
 import { GoogleGenAI, Type } from "@google/genai";
 
-const apiKey = process.env.API_KEY || '';
-const ai = new GoogleGenAI({ apiKey });
+// Initialize lazily to prevent crash on load if API key is missing
+const getAi = () => {
+  const apiKey = process.env.API_KEY;
+  if (!apiKey) return null;
+  return new GoogleGenAI({ apiKey });
+};
 
 export const generateEventIdeas = async (topic: string): Promise<string[]> => {
   try {
+    const ai = getAi();
+    if (!ai) throw new Error("API Key missing");
+
     const response = await ai.models.generateContent({
       model: 'gemini-3-flash-preview',
       contents: `Generate 3 creative and realistic event ideas for a youth organization (Karang Taruna) based on this theme: "${topic}". Keep descriptions short and punchy. Return only the JSON array.`,
@@ -31,6 +38,9 @@ export const generateEventIdeas = async (topic: string): Promise<string[]> => {
 
 export const refineProposal = async (title: string, roughNotes: string): Promise<{ description: string, estimatedBudget: number }> => {
   try {
+    const ai = getAi();
+    if (!ai) throw new Error("API Key missing");
+
     const response = await ai.models.generateContent({
       model: 'gemini-3-flash-preview',
       contents: `Act as a professional secretary for a Karang Taruna. Write a formal 2-sentence description for an event titled "${title}" based on these notes: "${roughNotes}". Also estimate a realistic budget in IDR (Indonesian Rupiah) for a small local event.`,

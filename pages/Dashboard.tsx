@@ -150,7 +150,7 @@ const Dashboard: React.FC = () => {
         <div className="flex justify-between items-center">
           <div 
             onClick={() => navigate('/profile')}
-            className="flex items-center gap-3 cursor-pointer group p-1 rounded-2xl hover:bg-black/5 transition-colors"
+            className="flex items-center gap-3 cursor-pointer group p-1 rounded-2xl hover:bg-black/5 transition-colors active:scale-95"
           >
             <div className={`w-12 h-12 rounded-full flex items-center justify-center overflow-hidden border-2 ${theme.name === 'default' ? 'border-slate-200' : 'border-white/50'}`}>
                {user?.photoURL ? <img src={user.photoURL} alt="Avatar" className="w-full h-full object-cover"/> : <span className="text-xs font-bold text-slate-500">KT</span>}
@@ -202,8 +202,8 @@ const Dashboard: React.FC = () => {
               { label: 'Kegiatan', icon: <Calendar className="w-6 h-6" />, path: '/events', color: 'bg-orange-50 text-orange-600' },
               { label: 'Laporan', icon: <ArrowUpRight className="w-6 h-6" />, path: '/reports', color: 'bg-purple-50 text-purple-600' },
             ].map((item, idx) => (
-              <div key={idx} onClick={() => navigate(item.path)} className="flex flex-col items-center gap-2 cursor-pointer group">
-                <div className={`w-16 h-16 rounded-[24px] flex items-center justify-center ${item.color} group-active:scale-95 transition-transform shadow-sm`}>
+              <div key={idx} onClick={() => navigate(item.path)} className="flex flex-col items-center gap-2 cursor-pointer group transition-transform active:scale-95">
+                <div className={`w-16 h-16 rounded-[24px] flex items-center justify-center ${item.color} shadow-sm`}>
                   {item.icon}
                 </div>
                 <span className="text-xs font-semibold text-slate-600">{item.label}</span>
