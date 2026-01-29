@@ -73,7 +73,7 @@ export const Modal: React.FC<{ isOpen: boolean; onClose: () => void; title: stri
       <div className="bg-white w-full max-w-md rounded-[32px] p-6 shadow-2xl animate-slide-up relative">
         <div className="flex justify-between items-center mb-6">
           <h3 className="text-xl font-bold text-slate-900">{title}</h3>
-          <button onClick={onClose} className="p-2 bg-slate-50 rounded-full hover:bg-slate-100">
+          <button onClick={onClose} className="p-2 bg-slate-50 rounded-full hover:bg-slate-100 transition-all active:scale-95">
             <X className="w-5 h-5 text-slate-500" />
           </button>
         </div>

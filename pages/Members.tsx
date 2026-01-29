@@ -112,7 +112,7 @@ const Members: React.FC = () => {
           <button
             key={f}
             onClick={() => setFilter(f)}
-            className={`px-5 py-2.5 rounded-full text-sm font-bold whitespace-nowrap transition-colors ${
+            className={`px-5 py-2.5 rounded-full text-sm font-bold whitespace-nowrap transition-all active:scale-95 ${
               filter === f 
                 ? 'bg-slate-900 text-white' 
                 : 'bg-white text-slate-500 border border-slate-200'
@@ -130,10 +130,10 @@ const Members: React.FC = () => {
             {/* Admin Controls */}
             {canManageMember(member.role) && (
               <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity flex gap-1 z-10">
-                 <button onClick={() => { setEditingMember(member); setIsEditModalOpen(true); }} className="p-1.5 bg-slate-100 rounded-full text-slate-600 hover:bg-slate-200">
+                 <button onClick={() => { setEditingMember(member); setIsEditModalOpen(true); }} className="p-1.5 bg-slate-100 rounded-full text-slate-600 hover:bg-slate-200 transition-all active:scale-95">
                    <Edit2 className="w-3 h-3"/>
                  </button>
-                 <button onClick={() => handleDeleteMember(member.id)} className="p-1.5 bg-red-50 rounded-full text-red-500 hover:bg-red-100">
+                 <button onClick={() => handleDeleteMember(member.id)} className="p-1.5 bg-red-50 rounded-full text-red-500 hover:bg-red-100 transition-all active:scale-95">
                    <Trash2 className="w-3 h-3"/>
                  </button>
               </div>
@@ -149,10 +149,10 @@ const Members: React.FC = () => {
             </div>
             
             <div className="flex gap-2 w-full mt-1">
-                <button className="flex-1 h-9 rounded-xl bg-slate-50 text-slate-600 flex items-center justify-center hover:bg-slate-100 transition-colors">
+                <button className="flex-1 h-9 rounded-xl bg-slate-50 text-slate-600 flex items-center justify-center hover:bg-slate-100 transition-all active:scale-95">
                     <Phone className="w-4 h-4" />
                 </button>
-                <button className="flex-1 h-9 rounded-xl bg-slate-50 text-slate-600 flex items-center justify-center hover:bg-slate-100 transition-colors">
+                <button className="flex-1 h-9 rounded-xl bg-slate-50 text-slate-600 flex items-center justify-center hover:bg-slate-100 transition-all active:scale-95">
                     <Mail className="w-4 h-4" />
                 </button>
             </div>

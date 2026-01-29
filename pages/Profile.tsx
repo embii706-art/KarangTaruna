@@ -59,7 +59,7 @@ const Profile: React.FC = () => {
     <div className="min-h-screen bg-white animate-fade-in relative z-50">
       {/* Header */}
       <div className="px-4 pt-6 pb-2 flex items-center gap-4 sticky top-0 bg-white z-10">
-        <button onClick={() => navigate(-1)} className="p-2 hover:bg-slate-50 rounded-full">
+        <button onClick={() => navigate(-1)} className="p-2 hover:bg-slate-50 rounded-full transition-all active:scale-95">
           <ArrowLeft className="w-6 h-6 text-slate-900" />
         </button>
         <h1 className="text-xl font-bold text-slate-900">Profil Saya</h1>
@@ -81,7 +81,7 @@ const Profile: React.FC = () => {
             <button 
               disabled={loading}
               onClick={() => fileInputRef.current?.click()}
-              className="absolute bottom-0 right-0 p-2.5 bg-indigo-600 text-white rounded-full shadow-lg hover:bg-indigo-700 transition-colors disabled:opacity-70"
+              className="absolute bottom-0 right-0 p-2.5 bg-indigo-600 text-white rounded-full shadow-lg hover:bg-indigo-700 transition-all active:scale-95 disabled:opacity-70"
             >
               {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Camera className="w-4 h-4" />}
             </button>

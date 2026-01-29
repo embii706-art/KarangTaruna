@@ -3,7 +3,7 @@ import { ArrowUpCircle, ArrowDownCircle, Download, Plus, Trash2 } from 'lucide-r
 import { SectionHeader, Button, Modal, Input, Select } from '../components/UI';
 import { Transaction } from '../types';
 import { collection, onSnapshot, addDoc, deleteDoc, doc, query, orderBy } from 'firebase/firestore';
-import { db } from '../services/firebase';
+import { db, auth } from '../services/firebase';
 
 const Finance: React.FC = () => {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
@@ -107,7 +107,7 @@ const Finance: React.FC = () => {
                             <div className={`font-bold ${trx.type === 'income' ? 'text-green-600' : 'text-slate-900'}`}>
                                 {trx.type === 'income' ? '+' : '-'} Rp {(trx.amount / 1000).toFixed(0)}rb
                             </div>
-                            <button onClick={() => handleDelete(trx.id)} className="p-2 text-slate-300 hover:text-red-500">
+                            <button onClick={() => handleDelete(trx.id)} className="p-2 text-slate-300 hover:text-red-500 transition-all active:scale-95">
                                 <Trash2 className="w-4 h-4" />
                             </button>
                         </div>
@@ -126,13 +126,13 @@ const Finance: React.FC = () => {
                     <label className="block text-sm font-bold text-slate-700 mb-2">Tipe</label>
                     <div className="flex gap-2">
                         <button 
-                            className={`flex-1 py-3 rounded-xl font-bold text-sm transition-colors ${newTrx.type === 'income' ? 'bg-green-100 text-green-700' : 'bg-slate-50 text-slate-500'}`}
+                            className={`flex-1 py-3 rounded-xl font-bold text-sm transition-all active:scale-95 ${newTrx.type === 'income' ? 'bg-green-100 text-green-700' : 'bg-slate-50 text-slate-500'}`}
                             onClick={() => setNewTrx({...newTrx, type: 'income'})}
                         >
                             Pemasukan
                         </button>
                         <button 
-                             className={`flex-1 py-3 rounded-xl font-bold text-sm transition-colors ${newTrx.type === 'expense' ? 'bg-red-100 text-red-700' : 'bg-slate-50 text-slate-500'}`}
+                             className={`flex-1 py-3 rounded-xl font-bold text-sm transition-all active:scale-95 ${newTrx.type === 'expense' ? 'bg-red-100 text-red-700' : 'bg-slate-50 text-slate-500'}`}
                              onClick={() => setNewTrx({...newTrx, type: 'expense'})}
                         >
                             Pengeluaran

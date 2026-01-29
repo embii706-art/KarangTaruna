@@ -4,7 +4,7 @@ import { Button, Card, Input, Modal } from '../components/UI';
 import { EventProposal } from '../types';
 import { generateEventIdeas, refineProposal } from '../services/geminiService';
 import { collection, onSnapshot, addDoc, updateDoc, deleteDoc, doc, query, orderBy } from 'firebase/firestore';
-import { db } from '../services/firebase';
+import { db, auth } from '../services/firebase';
 
 const Events: React.FC = () => {
   const [showAIModal, setShowAIModal] = useState(false);
@@ -98,7 +98,7 @@ const Events: React.FC = () => {
                     <div className="flex flex-col gap-2 items-end">
                         <button 
                             onClick={() => handleUpdateStatus(event.id, event.status)}
-                            className={`px-2 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider cursor-pointer transition-colors ${
+                            className={`px-2 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider cursor-pointer transition-all active:scale-95 ${
                                 event.status === 'approved' ? 'bg-green-100 text-green-700 hover:bg-green-200' : 
                                 event.status === 'completed' ? 'bg-slate-900 text-white' :
                                 'bg-yellow-100 text-yellow-700 hover:bg-yellow-200'
@@ -115,7 +115,7 @@ const Events: React.FC = () => {
                     <div className="text-xs font-bold text-slate-900 flex items-center gap-1 ml-auto">
                         Budget: Rp {event.budget.toLocaleString('id-ID')}
                     </div>
-                    <button onClick={() => handleDelete(event.id)} className="text-slate-300 hover:text-red-500 ml-2">
+                    <button onClick={() => handleDelete(event.id)} className="text-slate-300 hover:text-red-500 ml-2 transition-all active:scale-95">
                         <Trash2 className="w-4 h-4" />
                     </button>
                 </div>
@@ -138,7 +138,7 @@ const Events: React.FC = () => {
                         </div>
                         <h2 className="text-xl font-bold text-slate-900">AI Planner</h2>
                     </div>
-                    <button onClick={() => setShowAIModal(false)} className="p-2 bg-slate-100 rounded-full hover:bg-slate-200">
+                    <button onClick={() => setShowAIModal(false)} className="p-2 bg-slate-100 rounded-full hover:bg-slate-200 transition-all active:scale-95">
                         <X className="w-5 h-5 text-slate-500" />
                     </button>
                 </div>
@@ -155,7 +155,7 @@ const Events: React.FC = () => {
                             />
                             <div className="flex flex-wrap gap-2 mt-2">
                                 {['HUT RI', 'Ramadhan', 'Kebersihan', 'Turnamen Futsal'].map(t => (
-                                    <button key={t} onClick={() => setTopic(t)} className="px-4 py-2 bg-slate-50 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-100 border border-slate-100">
+                                    <button key={t} onClick={() => setTopic(t)} className="px-4 py-2 bg-slate-50 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-100 border border-slate-100 transition-all active:scale-95">
                                         {t}
                                     </button>
                                 ))}
@@ -167,7 +167,7 @@ const Events: React.FC = () => {
                         <div className="space-y-3">
                             <p className="text-slate-600">Pilih salah satu ide kegiatan:</p>
                             {ideas.map((idea, idx) => (
-                                <div key={idx} onClick={() => handleRefineProposal(idea)} className="p-4 rounded-2xl border border-slate-200 hover:border-indigo-500 hover:bg-indigo-50 cursor-pointer transition-all group">
+                                <div key={idx} onClick={() => handleRefineProposal(idea)} className="p-4 rounded-2xl border border-slate-200 hover:border-indigo-500 hover:bg-indigo-50 cursor-pointer transition-all active:scale-95 group">
                                     <h3 className="font-bold text-slate-900 group-hover:text-indigo-700">{idea}</h3>
                                 </div>
                             ))}

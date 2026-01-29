@@ -96,7 +96,7 @@ const Dashboard: React.FC = () => {
                                   <p className="font-bold">17:54</p>
                               </div>
                           </div>
-                          <button onClick={() => navigate('/finance')} className="bg-white text-emerald-800 p-3 rounded-xl font-bold text-sm flex items-center justify-center gap-2 hover:bg-emerald-50 transition-colors">
+                          <button onClick={() => navigate('/finance')} className="bg-white text-emerald-800 p-3 rounded-xl font-bold text-sm flex items-center justify-center gap-2 hover:bg-emerald-50 transition-all active:scale-95">
                               <Heart className="w-4 h-4 fill-emerald-800" /> Donasi
                           </button>
                       </div>
@@ -181,11 +181,11 @@ const Dashboard: React.FC = () => {
                 <div className="flex gap-3">
                     <button 
                     onClick={() => navigate('/finance')}
-                    className="flex-1 bg-white text-slate-900 py-3 rounded-2xl font-bold text-sm hover:bg-slate-100 transition-colors"
+                    className="flex-1 bg-white text-slate-900 py-3 rounded-2xl font-bold text-sm hover:bg-slate-100 transition-all active:scale-95"
                     >
                     Cek Detail
                     </button>
-                    <button className="flex-1 bg-white/10 text-white py-3 rounded-2xl font-bold text-sm backdrop-blur-md hover:bg-white/20 transition-colors border border-white/10">
+                    <button className="flex-1 bg-white/10 text-white py-3 rounded-2xl font-bold text-sm backdrop-blur-md hover:bg-white/20 transition-all active:scale-95 border border-white/10">
                     Bayar Iuran
                     </button>
                 </div>

@@ -1,8 +1,9 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { TrendingUp, Users, CalendarCheck, FileText, Upload, Loader2, Download, Trash2 } from 'lucide-react';
 import { Card, SectionHeader, Button } from '../components/UI';
-import { collection, addDoc, onSnapshot, deleteDoc, doc, query, orderBy } from 'firebase/firestore';
-import { db } from '../services/firebase';
+import { collection, addDoc, onSnapshot, deleteDoc, doc, query, orderBy, getDoc } from 'firebase/firestore';
+import { db, auth } from '../services/firebase';
+import { MemberRole } from '../types';
 
 const Reports: React.FC = () => {
   interface ReportFile {
@@ -15,14 +16,28 @@ const Reports: React.FC = () => {
 
   const [files, setFiles] = useState<ReportFile[]>([]);
   const [isUploading, setIsUploading] = useState(false);
+  const [userRole, setUserRole] = useState<MemberRole | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
+    // 1. Fetch Reports
     const q = query(collection(db, "reports"), orderBy("createdAt", "desc"));
     const unsubscribe = onSnapshot(q, (snapshot) => {
         const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as ReportFile));
         setFiles(data);
     });
+
+    // 2. Fetch User Role for Permissions
+    const fetchUserRole = async () => {
+        if (auth.currentUser) {
+            const userDoc = await getDoc(doc(db, "users", auth.currentUser.uid));
+            if (userDoc.exists()) {
+                setUserRole(userDoc.data().role as MemberRole);
+            }
+        }
+    };
+    fetchUserRole();
+
     return () => unsubscribe();
   }, []);
 
@@ -76,9 +91,22 @@ const Reports: React.FC = () => {
 
   const handleDelete = async (id: string) => {
       if(window.confirm("Hapus file laporan ini?")) {
-          await deleteDoc(doc(db, "reports", id));
+          try {
+            await deleteDoc(doc(db, "reports", id));
+          } catch (error) {
+            console.error("Error deleting file:", error);
+            alert("Gagal menghapus file.");
+          }
       }
   };
+
+  // Permission Check: Super Admin, Chairman, Vice Chairman, Secretary
+  const canDelete = userRole && [
+      MemberRole.SUPER_ADMIN, 
+      MemberRole.CHAIRMAN, 
+      MemberRole.VICE_CHAIRMAN, 
+      MemberRole.SECRETARY
+  ].includes(userRole);
 
   return (
     <div className="pt-4 px-4 animate-fade-in space-y-6 pb-24">
@@ -89,7 +117,7 @@ const Reports: React.FC = () => {
          </Button>
       </div>
 
-      {/* Summary Cards (Static Placeholder for now, could be dynamic) */}
+      {/* Summary Cards */}
       <div className="grid grid-cols-2 gap-4">
         <Card className="!p-4 bg-indigo-50 border-indigo-100">
            <div className="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600 mb-2">
@@ -117,7 +145,7 @@ const Reports: React.FC = () => {
                 <button 
                     onClick={handleUploadClick}
                     disabled={isUploading}
-                    className="flex items-center gap-1 text-indigo-600 hover:text-indigo-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm font-semibold"
+                    className="flex items-center gap-1 text-indigo-600 hover:text-indigo-800 transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed text-sm font-semibold"
                 >
                     {isUploading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Upload className="w-4 h-4" />}
                     {isUploading ? 'Uploading...' : 'Upload'}
@@ -148,14 +176,16 @@ const Reports: React.FC = () => {
                             href={file.url} 
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="w-8 h-8 rounded-full bg-slate-50 flex items-center justify-center text-slate-600 hover:bg-slate-200 flex-shrink-0 transition-colors"
+                            className="w-8 h-8 rounded-full bg-slate-50 flex items-center justify-center text-slate-600 hover:bg-slate-200 flex-shrink-0 transition-all active:scale-95"
                             download={file.name}
                         >
                             <Download className="w-4 h-4" />
                         </a>
-                        <button onClick={() => handleDelete(file.id)} className="w-8 h-8 rounded-full hover:bg-red-50 flex items-center justify-center text-slate-300 hover:text-red-500 transition-colors">
-                             <Trash2 className="w-4 h-4" />
-                        </button>
+                        {canDelete && (
+                            <button onClick={() => handleDelete(file.id)} className="w-8 h-8 rounded-full hover:bg-red-50 flex items-center justify-center text-slate-300 hover:text-red-500 transition-all active:scale-95">
+                                <Trash2 className="w-4 h-4" />
+                            </button>
+                        )}
                     </div>
                 </div>
             ))}
