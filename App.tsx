@@ -3,6 +3,7 @@ import { HashRouter as Router, Routes, Route, Link, useLocation, useNavigate } f
 import { Home, Users, Wallet, Calendar, PieChart } from 'lucide-react';
 import { onAuthStateChanged } from 'firebase/auth';
 import { auth } from './services/firebase';
+import { ThemeProvider } from './services/themeService';
 import Dashboard from './pages/Dashboard';
 import Members from './pages/Members';
 import Finance from './pages/Finance';
@@ -12,6 +13,8 @@ import Splash from './pages/Splash';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Profile from './pages/Profile';
+import Voting from './pages/Voting';
+import WasteBank from './pages/WasteBank';
 
 const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const location = useLocation();
@@ -80,21 +83,25 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 
 const App: React.FC = () => {
   return (
-    <Router>
-      <Layout>
-        <Routes>
-          <Route path="/" element={<Splash />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/profile" element={<Profile />} />
-          <Route path="/members" element={<Members />} />
-          <Route path="/finance" element={<Finance />} />
-          <Route path="/events" element={<Events />} />
-          <Route path="/reports" element={<Reports />} />
-        </Routes>
-      </Layout>
-    </Router>
+    <ThemeProvider>
+      <Router>
+        <Layout>
+          <Routes>
+            <Route path="/" element={<Splash />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/profile" element={<Profile />} />
+            <Route path="/members" element={<Members />} />
+            <Route path="/finance" element={<Finance />} />
+            <Route path="/events" element={<Events />} />
+            <Route path="/reports" element={<Reports />} />
+            <Route path="/voting" element={<Voting />} />
+            <Route path="/waste-bank" element={<WasteBank />} />
+          </Routes>
+        </Layout>
+      </Router>
+    </ThemeProvider>
   );
 };
 
