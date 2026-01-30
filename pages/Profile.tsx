@@ -1,13 +1,15 @@
 import React, { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Camera, Mail, User, Shield, LogOut, Loader2, IdCard } from 'lucide-react';
+import { ArrowLeft, Camera, Mail, User, Shield, LogOut, Loader2, IdCard, Globe } from 'lucide-react';
 import { auth, db } from '../services/firebase';
 import { updateProfile, signOut } from 'firebase/auth';
 import { doc, updateDoc } from 'firebase/firestore';
 import { Button, Input, Card, Modal } from '../components/UI';
 import MembershipCard from '../components/MembershipCard';
+import { useTranslation } from 'react-i18next';
 
 const Profile: React.FC = () => {
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const user = auth.currentUser;
   const [loading, setLoading] = useState(false);
@@ -17,6 +19,10 @@ const Profile: React.FC = () => {
   const handleLogout = async () => {
     await signOut(auth);
     navigate('/login');
+  };
+
+  const changeLanguage = (lng: string) => {
+    i18n.changeLanguage(lng);
   };
 
   const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -128,7 +134,7 @@ const Profile: React.FC = () => {
                    <p className="text-slate-900 font-medium">{user.email}</p>
                 </div>
              </div>
-             <div className="p-4 flex items-center gap-3">
+             <div className="p-4 border-b border-slate-50 flex items-center gap-3">
                 <div className="p-2 bg-green-50 text-green-600 rounded-lg">
                    <Shield className="w-5 h-5" />
                 </div>
@@ -137,6 +143,28 @@ const Profile: React.FC = () => {
                    <p className="text-green-600 font-bold flex items-center gap-1">
                       Terverifikasi
                    </p>
+                </div>
+             </div>
+             <div className="p-4 flex items-center gap-3">
+                <div className="p-2 bg-orange-50 text-orange-600 rounded-lg">
+                   <Globe className="w-5 h-5" />
+                </div>
+                <div className="flex-1">
+                   <p className="text-xs text-slate-400 font-bold uppercase">{t('common.language')}</p>
+                   <div className="flex gap-2 mt-1">
+                      <button
+                        onClick={() => changeLanguage('id')}
+                        className={`text-xs px-2 py-1 rounded border ${i18n.language === 'id' ? 'bg-orange-100 border-orange-200 text-orange-700' : 'bg-white border-slate-200 text-slate-600'}`}
+                      >
+                        Bahasa
+                      </button>
+                      <button
+                        onClick={() => changeLanguage('en')}
+                        className={`text-xs px-2 py-1 rounded border ${i18n.language === 'en' ? 'bg-orange-100 border-orange-200 text-orange-700' : 'bg-white border-slate-200 text-slate-600'}`}
+                      >
+                        English
+                      </button>
+                   </div>
                 </div>
              </div>
           </Card>
