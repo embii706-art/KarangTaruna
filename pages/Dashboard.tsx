@@ -21,6 +21,8 @@ const Dashboard: React.FC = () => {
   });
 
   useEffect(() => {
+    if (!user) return;
+
     // Firestore Listeners
     const unsubTrans = onSnapshot(collection(db, "transactions"), (snapshot) => {
       let bal = 0;
@@ -30,14 +32,20 @@ const Dashboard: React.FC = () => {
         else bal -= data.amount;
       });
       setStats(prev => ({ ...prev, balance: bal }));
+    }, (error) => {
+      console.error("Error fetching transactions:", error);
     });
 
     const unsubMembers = onSnapshot(collection(db, "users"), (snapshot) => {
       setStats(prev => ({ ...prev, memberCount: snapshot.size }));
+    }, (error) => {
+      console.error("Error fetching members:", error);
     });
 
     const unsubEvents = onSnapshot(query(collection(db, "events"), where("status", "!=", "completed")), (snapshot) => {
       setStats(prev => ({ ...prev, upcomingEvents: snapshot.size }));
+    }, (error) => {
+      console.error("Error fetching events:", error);
     });
 
     return () => {
@@ -45,7 +53,7 @@ const Dashboard: React.FC = () => {
       unsubMembers();
       unsubEvents();
     };
-  }, []);
+  }, [user]);
 
   return (
     <div className={`pt-4 px-4 space-y-6 animate-fade-in relative z-10 pb-24`}>

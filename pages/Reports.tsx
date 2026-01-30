@@ -20,11 +20,14 @@ const Reports: React.FC = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
+    if (!auth.currentUser) return;
     // 1. Fetch Reports
     const q = query(collection(db, "reports"), orderBy("createdAt", "desc"));
     const unsubscribe = onSnapshot(q, (snapshot) => {
         const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as ReportFile));
         setFiles(data);
+    }, (error) => {
+      console.error("Error fetching reports:", error);
     });
 
     // 2. Fetch User Role for Permissions

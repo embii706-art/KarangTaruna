@@ -16,10 +16,13 @@ const Finance: React.FC = () => {
   });
 
   useEffect(() => {
+    if (!auth.currentUser) return;
     const q = query(collection(db, "transactions"), orderBy("date", "desc"));
     const unsubscribe = onSnapshot(q, (snapshot) => {
       const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Transaction));
       setTransactions(data);
+    }, (error) => {
+      console.error("Error fetching transactions:", error);
     });
     return () => unsubscribe();
   }, []);

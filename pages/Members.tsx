@@ -16,13 +16,14 @@ const Members: React.FC = () => {
   const [currentUserRole, setCurrentUserRole] = useState<MemberRole | null>(null);
 
   useEffect(() => {
+    if (!auth.currentUser) return;
+
     // 1. Listen to members collection
     const unsubscribeMembers = onSnapshot(collection(db, "users"), (snapshot) => {
       const usersData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Member));
       setMembers(usersData);
     }, (error) => {
       console.error("Error fetching members:", error);
-      // Optional: setMembers([]) or show error toast
     });
 
     // 2. Fetch current user role

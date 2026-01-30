@@ -18,10 +18,13 @@ const Events: React.FC = () => {
   const [events, setEvents] = useState<EventProposal[]>([]);
 
   useEffect(() => {
+    if (!auth.currentUser) return;
     const q = query(collection(db, "events"), orderBy("date", "desc"));
     const unsubscribe = onSnapshot(q, (snapshot) => {
       const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as EventProposal));
       setEvents(data);
+    }, (error) => {
+      console.error("Error fetching events:", error);
     });
     return () => unsubscribe();
   }, []);
