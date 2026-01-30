@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Bell, Wallet, Users, Calendar, ArrowUpRight, Clock, MapPin, Heart, Flag } from 'lucide-react';
+import { Bell, Wallet, Users, Calendar, ArrowUpRight, Clock, MapPin, Heart, Flag, Image as ImageIcon, UserCheck } from 'lucide-react';
 import { Card, SectionHeader, Button } from '../components/UI';
 import { useNavigate } from 'react-router-dom';
 import { auth, db } from '../services/firebase';
@@ -113,7 +113,7 @@ const Dashboard: React.FC = () => {
 
         {/* Quick Menu */}
         <div className="bg-white/60 dark:bg-slate-900/50 backdrop-blur-xl p-4 rounded-[32px] border border-white/50 dark:border-slate-800 shadow-sm">
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid grid-cols-4 gap-4">
             {[
               { label: 'Anggota', icon: <Users className="w-6 h-6" />, path: '/members', color: 'bg-blue-50 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400' },
               { label: 'Keuangan', icon: <Wallet className="w-6 h-6" />, path: '/finance', color: 'bg-green-50 text-green-600 dark:bg-green-900/30 dark:text-green-400' },
@@ -121,12 +121,14 @@ const Dashboard: React.FC = () => {
               { label: 'Laporan', icon: <ArrowUpRight className="w-6 h-6" />, path: '/reports', color: 'bg-purple-50 text-purple-600 dark:bg-purple-900/30 dark:text-purple-400' },
               { label: 'Struktur', icon: <Network className="w-6 h-6" />, path: '/structure', color: 'bg-indigo-50 text-indigo-600 dark:bg-indigo-900/30 dark:text-indigo-400' },
               { label: 'Bank Sampah', icon: <Recycle className="w-6 h-6" />, path: '/waste-bank', color: 'bg-teal-50 text-teal-600 dark:bg-teal-900/30 dark:text-teal-400' },
+              { label: 'Galeri', icon: <ImageIcon className="w-6 h-6" />, path: '/gallery', color: 'bg-rose-50 text-rose-600 dark:bg-rose-900/30 dark:text-rose-400' },
+              { label: 'Verifikasi', icon: <UserCheck className="w-6 h-6" />, path: '/verification', color: 'bg-cyan-50 text-cyan-600 dark:bg-cyan-900/30 dark:text-cyan-400' },
             ].map((item, idx) => (
               <div key={idx} onClick={() => navigate(item.path)} className="flex flex-col items-center gap-2 cursor-pointer group transition-transform active:scale-95">
-                <div className={`w-16 h-16 rounded-[24px] flex items-center justify-center ${item.color} shadow-sm transition-colors`}>
+                <div className={`w-14 h-14 rounded-[20px] flex items-center justify-center ${item.color} shadow-sm transition-colors`}>
                   {item.icon}
                 </div>
-                <span className="text-[10px] font-bold text-slate-600 dark:text-slate-300 text-center">{item.label}</span>
+                <span className="text-[10px] font-bold text-slate-600 dark:text-slate-300 text-center leading-tight">{item.label}</span>
               </div>
             ))}
           </div>
