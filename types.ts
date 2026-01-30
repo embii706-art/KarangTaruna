@@ -13,7 +13,7 @@ export interface Member {
   role: MemberRole;
   avatar: string;
   joinedAt: string;
-  status: 'active' | 'inactive';
+  status: 'active' | 'inactive' | 'pending';
   email?: string;
 }
 

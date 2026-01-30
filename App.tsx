@@ -17,6 +17,8 @@ import Structure from './pages/Structure';
 import WasteBank from './pages/WasteBank';
 import Notifications from './pages/Notifications';
 import Payment from './pages/Payment';
+import Gallery from './pages/Gallery';
+import Verification from './pages/Verification';
 
 const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const location = useLocation();
@@ -102,6 +104,8 @@ const App: React.FC = () => {
             <Route path="/waste-bank" element={<WasteBank />} />
             <Route path="/notifications" element={<Notifications />} />
             <Route path="/payment" element={<Payment />} />
+            <Route path="/gallery" element={<Gallery />} />
+            <Route path="/verification" element={<Verification />} />
           </Routes>
         </Layout>
       </Router>
