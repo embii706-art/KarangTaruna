@@ -1,15 +1,17 @@
 import React, { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Camera, Mail, User, Shield, LogOut, Loader2 } from 'lucide-react';
+import { ArrowLeft, Camera, Mail, User, Shield, LogOut, Loader2, IdCard } from 'lucide-react';
 import { auth, db } from '../services/firebase';
 import { updateProfile, signOut } from 'firebase/auth';
 import { doc, updateDoc } from 'firebase/firestore';
-import { Button, Input, Card } from '../components/UI';
+import { Button, Input, Card, Modal } from '../components/UI';
+import MembershipCard from '../components/MembershipCard';
 
 const Profile: React.FC = () => {
   const navigate = useNavigate();
   const user = auth.currentUser;
   const [loading, setLoading] = useState(false);
+  const [showCard, setShowCard] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleLogout = async () => {
@@ -95,6 +97,14 @@ const Profile: React.FC = () => {
           </div>
           <h2 className="mt-4 text-xl font-bold text-slate-900">{user.displayName}</h2>
           <p className="text-slate-500 text-sm">Anggota KARTEJI</p>
+
+          <Button
+            variant="outline"
+            className="mt-4 !py-2 !px-4 text-sm h-10 border-indigo-200 text-indigo-600 hover:bg-indigo-50"
+            onClick={() => setShowCard(true)}
+          >
+            <IdCard className="w-4 h-4" /> Kartu Anggota
+          </Button>
         </div>
 
         {/* Info Cards */}
@@ -144,6 +154,17 @@ const Profile: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* ID Card Modal */}
+      <Modal isOpen={showCard} onClose={() => setShowCard(false)} title="Kartu Anggota Digital">
+         <div className="flex flex-col items-center gap-4">
+             <MembershipCard user={user} />
+             <p className="text-xs text-slate-400 text-center max-w-xs">
+                 Tunjukkan kartu ini sebagai bukti keanggotaan Karang Taruna yang sah.
+             </p>
+             <Button className="w-full" onClick={() => setShowCard(false)}>Tutup</Button>
+         </div>
+      </Modal>
     </div>
   );
 };
