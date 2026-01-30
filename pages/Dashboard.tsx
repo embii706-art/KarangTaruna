@@ -77,8 +77,9 @@ const Dashboard: React.FC = () => {
             <Button onClick={toggleTheme} variant="ghost" className="rounded-full border border-slate-200 dark:border-slate-700 w-12 h-12 !p-0 flex items-center justify-center bg-white dark:bg-slate-800 shadow-sm">
                 {theme === AppTheme.DARK ? <Sun className="w-5 h-5 text-yellow-400" /> : <Moon className="w-5 h-5 text-slate-700" />}
             </Button>
-            <Button variant="ghost" className="rounded-full border border-slate-200 dark:border-slate-700 w-12 h-12 !p-0 flex items-center justify-center bg-white dark:bg-slate-800 shadow-sm">
+            <Button onClick={() => navigate('/notifications')} variant="ghost" className="rounded-full border border-slate-200 dark:border-slate-700 w-12 h-12 !p-0 flex items-center justify-center bg-white dark:bg-slate-800 shadow-sm relative">
                 <Bell className="w-5 h-5 text-slate-700 dark:text-slate-300" />
+                <span className="absolute top-3 right-3 w-2 h-2 bg-red-500 rounded-full border border-white dark:border-slate-800"></span>
             </Button>
           </div>
         </div>
@@ -100,7 +101,10 @@ const Dashboard: React.FC = () => {
                     >
                     Cek Detail
                     </button>
-                    <button className="flex-1 bg-white/10 text-white py-3 rounded-2xl font-bold text-sm backdrop-blur-md hover:bg-white/20 transition-all active:scale-95 border border-white/10">
+                    <button
+                    onClick={() => navigate('/payment')}
+                    className="flex-1 bg-white/10 text-white py-3 rounded-2xl font-bold text-sm backdrop-blur-md hover:bg-white/20 transition-all active:scale-95 border border-white/10"
+                    >
                     Bayar Iuran
                     </button>
                 </div>

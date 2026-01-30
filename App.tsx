@@ -15,6 +15,8 @@ import Register from './pages/Register';
 import Profile from './pages/Profile';
 import Structure from './pages/Structure';
 import WasteBank from './pages/WasteBank';
+import Notifications from './pages/Notifications';
+import Payment from './pages/Payment';
 
 const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const location = useLocation();
@@ -98,6 +100,8 @@ const App: React.FC = () => {
             <Route path="/reports" element={<Reports />} />
             <Route path="/structure" element={<Structure />} />
             <Route path="/waste-bank" element={<WasteBank />} />
+            <Route path="/notifications" element={<Notifications />} />
+            <Route path="/payment" element={<Payment />} />
           </Routes>
         </Layout>
       </Router>
