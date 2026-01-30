@@ -1,9 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { ArrowLeft, Bell, Calendar, Info, AlertTriangle, CheckCircle } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { collection, onSnapshot, query, orderBy, limit } from 'firebase/firestore';
-import { db } from '../services/firebase';
-import { Card } from '../components/UI';
 
 interface Notification {
   id: string;
@@ -16,31 +13,12 @@ interface Notification {
 
 const Notifications: React.FC = () => {
   const navigate = useNavigate();
-  const [notifications, setNotifications] = useState<Notification[]>([]);
-
-  useEffect(() => {
-    // Fetch notifications
-    const q = query(
-        collection(db, "notifications"),
-        orderBy("date", "desc"),
-        limit(20)
-    );
-
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Notification));
-      setNotifications(data);
-    }, (error) => {
-        console.error("Error fetching notifications:", error);
-        // Fallback mock data if Firestore is empty or fails (for demo/verification)
-        setNotifications([
-            { id: '1', title: 'Rapat Bulanan', message: 'Jangan lupa hadir rapat bulanan besok malam.', type: 'event', date: new Date().toISOString() },
-            { id: '2', title: 'Iuran Wajib', message: 'Silakan bayar iuran bulan ini.', type: 'warning', date: new Date(Date.now() - 86400000).toISOString() },
-            { id: '3', title: 'Selamat Datang!', message: 'Selamat bergabung di aplikasi KARTEJI.', type: 'success', date: new Date(Date.now() - 172800000).toISOString() }
-        ]);
-    });
-
-    return () => unsubscribe();
-  }, []);
+  // Manual notifications list - currently empty as requested ("kosongkan")
+  // You can add items here manually, e.g.:
+  // { id: '1', title: 'Welcome', message: 'Welcome to the app!', type: 'info', date: new Date().toISOString() }
+  const [notifications] = useState<Notification[]>([
+    // Manual entries can be placed here
+  ]);
 
   const getIcon = (type: string) => {
     switch (type) {

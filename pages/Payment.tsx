@@ -1,7 +1,7 @@
 import React from 'react';
-import { ArrowLeft, Wallet, CreditCard, Clock, ChevronRight, Lock } from 'lucide-react';
+import { ArrowLeft, Wallet, Lock } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { Card, Button } from '../components/UI';
+import { Button } from '../components/UI';
 
 const Payment: React.FC = () => {
   const navigate = useNavigate();
@@ -18,61 +18,18 @@ const Payment: React.FC = () => {
         </h1>
       </div>
 
-      <div className="p-4 space-y-6">
-        {/* Bill Card */}
-        <div className="bg-gradient-to-br from-indigo-600 to-indigo-800 rounded-[32px] p-6 text-white shadow-xl relative overflow-hidden">
-             <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-10 -mt-10 blur-2xl"></div>
-             <p className="text-white/70 font-medium mb-1">Tagihan Bulan Ini</p>
-             <h2 className="text-4xl font-bold mb-6">Rp 15.000</h2>
-
-             <div className="flex items-center gap-2 text-sm bg-white/10 p-3 rounded-xl backdrop-blur-md">
-                <Clock className="w-4 h-4" />
-                <span>Jatuh Tempo: <strong>25 Feb 2025</strong></span>
-             </div>
-        </div>
-
-        {/* Payment Methods (Disabled / Coming Soon) */}
-        <div>
-            <h3 className="font-bold text-slate-900 dark:text-white mb-4">Metode Pembayaran</h3>
-            <div className="space-y-3 opacity-60 pointer-events-none grayscale">
-                <Card className="flex items-center justify-between !p-4 border-slate-200 dark:border-slate-800">
-                    <div className="flex items-center gap-3">
-                        <div className="p-2 bg-blue-50 dark:bg-blue-900/20 rounded-xl">
-                            <CreditCard className="w-6 h-6 text-blue-600" />
-                        </div>
-                        <div>
-                            <h4 className="font-bold text-slate-900 dark:text-white text-sm">Transfer Bank / QRIS</h4>
-                            <p className="text-xs text-slate-500">Otomatis verifikasi</p>
-                        </div>
-                    </div>
-                    <ChevronRight className="w-5 h-5 text-slate-400" />
-                </Card>
-
-                <Card className="flex items-center justify-between !p-4 border-slate-200 dark:border-slate-800">
-                    <div className="flex items-center gap-3">
-                        <div className="p-2 bg-orange-50 dark:bg-orange-900/20 rounded-xl">
-                            <Wallet className="w-6 h-6 text-orange-600" />
-                        </div>
-                        <div>
-                            <h4 className="font-bold text-slate-900 dark:text-white text-sm">Tunai ke Bendahara</h4>
-                            <p className="text-xs text-slate-500">Konfirmasi manual</p>
-                        </div>
-                    </div>
-                    <ChevronRight className="w-5 h-5 text-slate-400" />
-                </Card>
-            </div>
-        </div>
+      <div className="flex-1 flex flex-col items-center justify-center p-8 space-y-6">
 
         {/* Coming Soon State */}
-        <div className="text-center py-8 bg-slate-100 dark:bg-slate-900 rounded-[32px] border border-slate-200 dark:border-slate-800">
-             <div className="w-16 h-16 bg-slate-200 dark:bg-slate-800 rounded-full flex items-center justify-center mx-auto mb-4">
-                 <Lock className="w-8 h-8 text-slate-400" />
+        <div className="text-center">
+             <div className="w-20 h-20 bg-indigo-50 dark:bg-indigo-900/20 rounded-full flex items-center justify-center mx-auto mb-6 animate-pulse">
+                 <Lock className="w-10 h-10 text-indigo-500" />
              </div>
-             <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2">Fitur Segera Hadir</h3>
-             <p className="text-sm text-slate-500 dark:text-slate-400 max-w-xs mx-auto px-4">
+             <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-3">Fitur Segera Hadir</h2>
+             <p className="text-slate-500 dark:text-slate-400 max-w-xs mx-auto mb-8 leading-relaxed">
                  Sistem pembayaran digital sedang dalam tahap pengembangan. Silakan hubungi bendahara untuk pembayaran manual.
              </p>
-             <Button className="mt-6 w-auto !px-8" variant="secondary" onClick={() => navigate('/dashboard')}>
+             <Button className="w-full max-w-xs mx-auto" onClick={() => navigate('/dashboard')}>
                  Kembali ke Dashboard
              </Button>
         </div>
