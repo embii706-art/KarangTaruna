@@ -22,7 +22,7 @@ const Splash: React.FC = () => {
       <div className="relative z-10 flex flex-col items-center">
         <div className="w-40 h-40 flex items-center justify-center mb-6 animate-bounce-slow">
            <img 
-             src="/logo.png" 
+             src="/logo.svg"
              alt="KARTEJI" 
              className="w-full h-full object-contain drop-shadow-2xl"
              onError={(e) => {

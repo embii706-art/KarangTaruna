@@ -33,7 +33,7 @@ const Login: React.FC = () => {
       <div className="mb-8 flex flex-col items-center text-center">
         <div className="w-24 h-24 mb-4">
           <img 
-            src="/logo.png" 
+            src="/logo.svg"
             alt="KARTEJI Logo" 
             className="w-full h-full object-contain"
             onError={(e) => {

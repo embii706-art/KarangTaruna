@@ -40,3 +40,14 @@ export interface NavItem {
   icon: any; // Using lucide-react icons
   path: string;
 }
+
+export enum AppTheme {
+  LIGHT = 'light',
+  DARK = 'dark'
+}
+
+export enum Season {
+  NONE = 'none',
+  RAMADAN = 'ramadan',
+  INDEPENDENCE = 'independence'
+}
