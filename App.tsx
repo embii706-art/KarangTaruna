@@ -13,7 +13,7 @@ import Splash from './pages/Splash';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Profile from './pages/Profile';
-import Voting from './pages/Voting';
+import Structure from './pages/Structure';
 import WasteBank from './pages/WasteBank';
 
 const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -96,7 +96,7 @@ const App: React.FC = () => {
             <Route path="/finance" element={<Finance />} />
             <Route path="/events" element={<Events />} />
             <Route path="/reports" element={<Reports />} />
-            <Route path="/voting" element={<Voting />} />
+            <Route path="/structure" element={<Structure />} />
             <Route path="/waste-bank" element={<WasteBank />} />
           </Routes>
         </Layout>

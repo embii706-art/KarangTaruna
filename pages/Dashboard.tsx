@@ -7,7 +7,7 @@ import { collection, onSnapshot, query, where } from 'firebase/firestore';
 import { useTheme } from '../services/themeService';
 import { Season, AppTheme } from '../types';
 import RamadanWidget from '../components/RamadanWidget';
-import { Vote, Recycle, Sun, Moon } from 'lucide-react';
+import { Recycle, Sun, Moon, Network } from 'lucide-react';
 
 const Dashboard: React.FC = () => {
   const navigate = useNavigate();
@@ -115,7 +115,7 @@ const Dashboard: React.FC = () => {
               { label: 'Keuangan', icon: <Wallet className="w-6 h-6" />, path: '/finance', color: 'bg-green-50 text-green-600 dark:bg-green-900/30 dark:text-green-400' },
               { label: 'Kegiatan', icon: <Calendar className="w-6 h-6" />, path: '/events', color: 'bg-orange-50 text-orange-600 dark:bg-orange-900/30 dark:text-orange-400' },
               { label: 'Laporan', icon: <ArrowUpRight className="w-6 h-6" />, path: '/reports', color: 'bg-purple-50 text-purple-600 dark:bg-purple-900/30 dark:text-purple-400' },
-              { label: 'E-Voting', icon: <Vote className="w-6 h-6" />, path: '/voting', color: 'bg-indigo-50 text-indigo-600 dark:bg-indigo-900/30 dark:text-indigo-400' },
+              { label: 'Struktur', icon: <Network className="w-6 h-6" />, path: '/structure', color: 'bg-indigo-50 text-indigo-600 dark:bg-indigo-900/30 dark:text-indigo-400' },
               { label: 'Bank Sampah', icon: <Recycle className="w-6 h-6" />, path: '/waste-bank', color: 'bg-teal-50 text-teal-600 dark:bg-teal-900/30 dark:text-teal-400' },
             ].map((item, idx) => (
               <div key={idx} onClick={() => navigate(item.path)} className="flex flex-col items-center gap-2 cursor-pointer group transition-transform active:scale-95">
