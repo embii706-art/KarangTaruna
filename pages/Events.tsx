@@ -25,6 +25,11 @@ const Events: React.FC = () => {
       setEvents(data);
     }, (error) => {
       console.error("Error fetching events:", error);
+      // Fallback/Mock Data
+      setEvents([
+          { id: '1', title: 'Lomba 17 Agustus', date: new Date().toISOString(), description: 'Perayaan hari kemerdekaan dengan berbagai lomba tradisional.', budget: 2500000, status: 'approved' },
+          { id: '2', title: 'Kerja Bakti Desa', date: new Date(Date.now() + 86400000 * 7).toISOString(), description: 'Membersihkan selokan dan lingkungan sekitar.', budget: 500000, status: 'draft' }
+      ]);
     });
     return () => unsubscribe();
   }, []);
