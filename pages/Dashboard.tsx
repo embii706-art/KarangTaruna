@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Bell, Wallet, Users, Calendar, ArrowUpRight, ArrowDownLeft, MoreHorizontal, ChevronRight, Activity } from 'lucide-react';
+import { Bell, Wallet, Users, Calendar, ArrowUpRight, ArrowDownLeft, MoreHorizontal, ChevronRight, Activity, TrendingUp, Sparkles, CreditCard } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { auth, db } from '../services/firebase';
 import { collection, onSnapshot, query, where, limit, orderBy } from 'firebase/firestore';
@@ -39,18 +39,11 @@ const Dashboard: React.FC = () => {
     });
 
     // Events - Fetch upcoming
-    const qEvents = query(
-        collection(db, "events"),
-        where("status", "!=", "completed"),
-        orderBy("date", "asc"), // Requires index? If fails, remove orderBy or add index
-        limit(3)
-    );
-
-    // Note: If orderBy fails due to missing index, we might need to handle it.
-    // For now, let's keep it simple or use a simple query.
+    // Simplify query to avoid index issues for now
     const unsubEvents = onSnapshot(collection(db, "events"), (snapshot) => {
         const events = snapshot.docs.map(d => ({id: d.id, ...d.data()}))
                         .filter((e: any) => e.status !== 'completed')
+                        .sort((a: any, b: any) => new Date(a.date).getTime() - new Date(b.date).getTime())
                         .slice(0, 3);
         setStats(prev => ({ ...prev, upcomingEvents: events.length }));
         setRecentEvents(events);
@@ -64,143 +57,146 @@ const Dashboard: React.FC = () => {
   }, [user]);
 
   const menuItems = [
-    { label: 'Anggota', icon: Users, path: '/members' },
-    { label: 'Keuangan', icon: Wallet, path: '/finance' },
-    { label: 'Proker', icon: Calendar, path: '/events' },
-    { label: 'Laporan', icon: Activity, path: '/reports' },
-    // { label: 'Galeri', icon: Image, path: '/gallery' },
-    // { label: 'Verif', icon: CheckCircle, path: '/verification' },
+    { label: 'Anggota', icon: Users, path: '/members', color: 'text-blue-400 bg-blue-500/10' },
+    { label: 'Keuangan', icon: Wallet, path: '/finance', color: 'text-emerald-400 bg-emerald-500/10' },
+    { label: 'Proker', icon: Calendar, path: '/events', color: 'text-purple-400 bg-purple-500/10' },
+    { label: 'Laporan', icon: Activity, path: '/reports', color: 'text-orange-400 bg-orange-500/10' },
   ];
 
   return (
-    <div className="min-h-screen bg-[#F8F9FA] pt-8 px-6 pb-32 space-y-8 animate-fade-in relative z-10">
+    <div className="pt-8 px-6 pb-32 space-y-8 animate-fade-in relative z-10">
+
+        {/* Decorative Background Mesh */}
+        <div className="fixed top-0 left-0 w-full h-[500px] mesh-gradient opacity-30 pointer-events-none -z-10 blur-3xl"></div>
 
         {/* Header */}
-        <div className="flex justify-between items-start">
+        <div className="flex justify-between items-center">
           <div>
-            <h1 className="text-3xl font-bold text-[#111111] tracking-tight">
-              Hey, {user?.displayName?.split(' ')[0] || 'Member'}!
+            <p className="text-slate-400 font-medium text-sm mb-1">Selamat Pagi,</p>
+            <h1 className="text-2xl font-bold text-white tracking-tight flex items-center gap-2">
+              {user?.displayName?.split(' ')[0] || 'Member'} <span className="animate-pulse">👋</span>
             </h1>
-            <p className="text-slate-500 font-medium mt-1">Good morning! 👋</p>
           </div>
           <div 
             onClick={() => navigate('/notifications')}
-            className="relative cursor-pointer group"
+            className="relative cursor-pointer group glass rounded-full p-2.5 hover:bg-white/10 transition-all active:scale-95"
           >
-            <div className="w-12 h-12 rounded-full border-2 border-white shadow-sm overflow-hidden bg-slate-200">
-               {user?.photoURL ? (
-                 <img src={user.photoURL} alt="Profile" className="w-full h-full object-cover" />
-               ) : (
-                 <div className="w-full h-full flex items-center justify-center text-slate-500 font-bold">
-                    {user?.displayName?.[0] || 'K'}
-                 </div>
-               )}
-            </div>
-            <div className="absolute top-0 right-0 w-3.5 h-3.5 bg-red-500 rounded-full border-2 border-[#F8F9FA]"></div>
+            <Bell className="w-6 h-6 text-white" />
+            <div className="absolute top-2 right-2.5 w-2 h-2 bg-red-500 rounded-full shadow-[0_0_8px_#ef4444]"></div>
           </div>
         </div>
 
-        {/* Hero / Balance Section */}
-        <div>
-          <div className="flex justify-between items-center mb-2">
-            <p className="text-slate-500 font-semibold text-sm">Total Kas Klub</p>
-            <span className="text-emerald-600 bg-emerald-100 px-2 py-0.5 rounded-full text-[10px] font-bold">+2.5%</span>
-          </div>
-          <h2 className="text-[42px] font-black text-[#111111] leading-none tracking-tight">
-            Rp {stats.balance.toLocaleString('id-ID')}
-          </h2>
+        {/* Hero / Balance Section (Glass Credit Card Style) */}
+        <div className="relative group">
+            <div className="absolute inset-0 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-[32px] blur-xl opacity-40 group-hover:opacity-60 transition-opacity duration-500"></div>
+            <div className="glass-card rounded-[32px] p-6 relative overflow-hidden">
+                <div className="absolute top-0 right-0 w-48 h-48 bg-white/5 rounded-full blur-2xl -mr-10 -mt-10"></div>
+
+                <div className="flex justify-between items-start mb-8">
+                    <div className="p-3 bg-white/10 rounded-2xl backdrop-blur-md">
+                        <CreditCard className="w-6 h-6 text-white" />
+                    </div>
+                    <div className="flex items-center gap-1 bg-emerald-500/20 px-3 py-1 rounded-full border border-emerald-500/20 backdrop-blur-sm">
+                        <TrendingUp className="w-3 h-3 text-emerald-400" />
+                        <span className="text-xs font-bold text-emerald-300">+2.5%</span>
+                    </div>
+                </div>
+
+                <div>
+                    <p className="text-slate-400 font-medium text-sm mb-1 tracking-wider uppercase">Total Kas Klub</p>
+                    <h2 className="text-4xl font-bold text-white tracking-tight text-gradient">
+                        Rp {stats.balance.toLocaleString('id-ID')}
+                    </h2>
+                </div>
+            </div>
         </div>
 
         {/* Action Buttons */}
-        <div className="flex gap-4">
+        <div className="grid grid-cols-2 gap-4">
             <button
                 onClick={() => navigate('/finance')}
-                className="flex-1 bg-white h-16 rounded-[24px] flex items-center justify-center gap-3 shadow-sm border border-slate-100 active:scale-95 transition-all group"
+                className="glass hover:bg-white/10 h-16 rounded-[24px] flex items-center justify-center gap-3 active:scale-95 transition-all group border border-white/5"
             >
-                <div className="w-10 h-10 rounded-full bg-[#111111] flex items-center justify-center text-white group-hover:rotate-45 transition-transform">
+                <div className="w-10 h-10 rounded-full bg-indigo-500 flex items-center justify-center text-white shadow-[0_0_15px_rgba(99,102,241,0.5)] group-hover:scale-110 transition-transform">
                     <ArrowUpRight className="w-5 h-5" />
                 </div>
-                <span className="font-bold text-[#111111]">Cek Kas</span>
+                <span className="font-bold text-slate-200">Cek Kas</span>
             </button>
             <button
                 onClick={() => navigate('/payment')}
-                className="flex-1 bg-white h-16 rounded-[24px] flex items-center justify-center gap-3 shadow-sm border border-slate-100 active:scale-95 transition-all group"
+                className="glass hover:bg-white/10 h-16 rounded-[24px] flex items-center justify-center gap-3 active:scale-95 transition-all group border border-white/5"
             >
-                <div className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-[#111111] group-hover:rotate-45 transition-transform">
+                <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center text-slate-900 group-hover:scale-110 transition-transform">
                     <ArrowDownLeft className="w-5 h-5" />
                 </div>
-                <span className="font-bold text-[#111111]">Bayar</span>
+                <span className="font-bold text-slate-200">Bayar</span>
             </button>
         </div>
 
-        {/* Stacked Cards Layout */}
-        <div className="relative pt-4">
-
-            {/* Mint Card (Top Layer) */}
-            <div className="bg-[#D0F0EA] rounded-[40px] p-8 pb-12 relative z-20 shadow-sm">
-                <div className="flex justify-between items-center mb-6">
-                    <h3 className="font-bold text-xl text-[#0F3930]">Menu Cepat</h3>
-                    <button onClick={() => navigate('/structure')} className="bg-white/40 hover:bg-white/60 w-10 h-10 rounded-full flex items-center justify-center text-[#0F3930] transition-colors">
-                        <MoreHorizontal className="w-5 h-5" />
-                    </button>
-                </div>
-
-                <div className="grid grid-cols-4 gap-4">
-                    {menuItems.map((item, idx) => (
-                        <div key={idx} onClick={() => navigate(item.path)} className="flex flex-col items-center gap-2 cursor-pointer group active:scale-95 transition-transform">
-                            <div className="w-14 h-14 rounded-[20px] bg-[#0F3930] text-[#D0F0EA] flex items-center justify-center shadow-sm">
-                                <item.icon className="w-6 h-6" strokeWidth={2} />
-                            </div>
-                            <span className="text-[11px] font-bold text-[#0F3930]">{item.label}</span>
+        {/* Quick Menu */}
+        <div>
+             <div className="flex justify-between items-center mb-4">
+                <h3 className="text-lg font-bold text-white">Menu Cepat</h3>
+                <button onClick={() => navigate('/structure')} className="text-slate-400 text-sm hover:text-white transition-colors">
+                    <MoreHorizontal className="w-5 h-5" />
+                </button>
+             </div>
+             <div className="grid grid-cols-4 gap-4">
+                {menuItems.map((item, idx) => (
+                    <div key={idx} onClick={() => navigate(item.path)} className="flex flex-col items-center gap-3 cursor-pointer group active:scale-95 transition-transform">
+                        <div className={`w-16 h-16 rounded-[24px] flex items-center justify-center glass border border-white/5 group-hover:border-white/20 transition-all ${item.color}`}>
+                            <item.icon className="w-7 h-7" strokeWidth={1.5} />
                         </div>
-                    ))}
-                </div>
-
-                {/* Extra Stats in Mint Card */}
-                <div className="mt-8 bg-[#0F3930]/5 rounded-3xl p-4 flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center text-[#0F3930] font-bold">
-                            {stats.memberCount}
-                        </div>
-                        <div>
-                            <p className="text-xs font-bold text-[#0F3930] opacity-60">TOTAL ANGGOTA</p>
-                            <p className="text-sm font-bold text-[#0F3930]">Aktif Bergabung</p>
-                        </div>
+                        <span className="text-[11px] font-medium text-slate-400 group-hover:text-white transition-colors">{item.label}</span>
                     </div>
-                    <ChevronRight className="w-5 h-5 text-[#0F3930] opacity-40" />
-                </div>
+                ))}
+             </div>
+        </div>
+
+        {/* Recent Activity / Events */}
+        <div>
+            <div className="flex justify-between items-center mb-4">
+                <h3 className="text-lg font-bold text-white">Agenda Terdekat</h3>
+                <button onClick={() => navigate('/events')} className="text-indigo-400 text-sm font-medium hover:text-indigo-300 transition-colors">Lihat Semua</button>
             </div>
 
-            {/* Black Card (Bottom Layer) */}
-            <div className="bg-[#111111] rounded-[40px] p-8 pt-16 -mt-10 relative z-10 text-white min-h-[300px]">
-                <div className="flex justify-between items-center mb-6">
-                    <h3 className="font-bold text-xl">Agenda Klub</h3>
-                    <button onClick={() => navigate('/events')} className="text-white/40 text-sm hover:text-white transition-colors">View All</button>
-                </div>
-
-                <div className="space-y-4">
-                    {recentEvents.length > 0 ? recentEvents.map((event, idx) => (
-                         <div key={idx} className="flex items-center gap-4 group">
-                            <div className="w-12 h-12 rounded-[18px] bg-white/10 flex items-center justify-center text-white font-bold group-hover:bg-[#D0F0EA] group-hover:text-[#111111] transition-colors">
-                                {event.title ? event.title[0] : 'E'}
-                            </div>
-                            <div className="flex-1">
-                                <h4 className="font-bold text-lg">{event.title}</h4>
-                                <p className="text-white/40 text-xs font-medium">{event.date} • {event.location || 'TBA'}</p>
-                            </div>
-                            <div className="w-8 h-8 rounded-full border border-white/10 flex items-center justify-center">
-                                <ChevronRight className="w-4 h-4 text-white/40" />
-                            </div>
-                         </div>
-                    )) : (
-                        <div className="text-center py-8 text-white/30 text-sm">
-                            Belum ada agenda
+            <div className="space-y-3">
+                {recentEvents.length > 0 ? recentEvents.map((event, idx) => (
+                        <div key={idx} className="glass p-4 rounded-[24px] flex items-center gap-4 group hover:bg-white/5 transition-colors border border-white/5">
+                        <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-indigo-500/20 to-purple-500/20 flex items-center justify-center text-indigo-300 font-bold group-hover:scale-105 transition-transform border border-white/5">
+                            {new Date(event.date).getDate()}
                         </div>
-                    )}
-                </div>
+                        <div className="flex-1 min-w-0">
+                            <h4 className="font-bold text-slate-200 truncate">{event.title}</h4>
+                            <p className="text-slate-500 text-xs font-medium truncate mt-0.5">{event.description || 'Tidak ada deskripsi'}</p>
+                        </div>
+                        <div className="w-8 h-8 rounded-full border border-white/10 flex items-center justify-center group-hover:bg-white/10 transition-colors">
+                            <ChevronRight className="w-4 h-4 text-slate-400" />
+                        </div>
+                        </div>
+                )) : (
+                    <div className="glass p-8 rounded-[24px] text-center border border-white/5 border-dashed">
+                        <p className="text-slate-500 text-sm">Belum ada agenda aktif</p>
+                    </div>
+                )}
+            </div>
+        </div>
 
-                {/* Visual spacer at bottom to account for nav bar overlap if needed */}
-                <div className="h-12"></div>
+        {/* Stats Grid */}
+        <div className="grid grid-cols-2 gap-4 pb-4">
+            <div className="glass p-5 rounded-[24px] border border-white/5">
+                <div className="w-10 h-10 rounded-full bg-orange-500/10 flex items-center justify-center text-orange-400 mb-3">
+                    <Users className="w-5 h-5" />
+                </div>
+                <h3 className="text-2xl font-bold text-white">{stats.memberCount}</h3>
+                <p className="text-xs font-medium text-slate-500 uppercase tracking-wide mt-1">Anggota Aktif</p>
+            </div>
+            <div className="glass p-5 rounded-[24px] border border-white/5">
+                 <div className="w-10 h-10 rounded-full bg-blue-500/10 flex items-center justify-center text-blue-400 mb-3">
+                    <Sparkles className="w-5 h-5" />
+                </div>
+                <h3 className="text-2xl font-bold text-white">Top</h3>
+                <p className="text-xs font-medium text-slate-500 uppercase tracking-wide mt-1">Performa Klub</p>
             </div>
         </div>
     </div>
