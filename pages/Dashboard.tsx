@@ -3,9 +3,12 @@ import { Bell, Wallet, Users, Calendar, ArrowUpRight, ArrowDownLeft, MoreHorizon
 import { useNavigate } from 'react-router-dom';
 import { auth, db } from '../services/firebase';
 import { collection, onSnapshot, query, where, limit, orderBy } from 'firebase/firestore';
+import { useTheme } from '../services/themeService';
+import { Season } from '../types';
 
 const Dashboard: React.FC = () => {
   const navigate = useNavigate();
+  const { season } = useTheme();
   const user = auth.currentUser;
   
   const [stats, setStats] = useState({
@@ -60,7 +63,9 @@ const Dashboard: React.FC = () => {
     <div className="pt-8 px-6 pb-32 space-y-6 animate-fade-in relative z-10">
 
         {/* Decorative Background Mesh */}
-        <div className="fixed top-0 left-0 w-full h-[500px] mesh-gradient opacity-30 pointer-events-none -z-10 blur-3xl"></div>
+        <div className={`fixed top-0 left-0 w-full h-[500px] opacity-30 pointer-events-none -z-10 blur-3xl transition-colors duration-1000
+            ${season === Season.RAMADAN ? 'bg-emerald-900' : season === Season.INDEPENDENCE ? 'bg-red-900' : 'mesh-gradient'}`}
+        ></div>
 
         {/* Header */}
         <div className="flex justify-between items-start">
@@ -98,9 +103,21 @@ const Dashboard: React.FC = () => {
                     <h2 className="text-lg font-bold text-white mb-2 leading-tight">Welcome!<br/>Let's schedule your projects</h2>
                 </div>
                 {/* Illustration Placeholder */}
-                <div className="w-24 h-24 bg-gradient-to-br from-indigo-500/20 to-purple-500/20 rounded-full flex items-center justify-center relative">
-                    <div className="absolute inset-0 bg-indigo-500/20 blur-xl rounded-full"></div>
-                    <Calendar className="w-10 h-10 text-indigo-300 relative z-10" />
+                <div className={`w-24 h-24 rounded-full flex items-center justify-center relative transition-colors duration-500
+                    ${season === Season.RAMADAN ? 'bg-gradient-to-br from-emerald-500/20 to-green-500/20' :
+                      season === Season.INDEPENDENCE ? 'bg-gradient-to-br from-red-500/20 to-white/20' :
+                      'bg-gradient-to-br from-indigo-500/20 to-purple-500/20'}`}
+                >
+                    <div className={`absolute inset-0 blur-xl rounded-full opacity-50
+                        ${season === Season.RAMADAN ? 'bg-emerald-500/20' :
+                          season === Season.INDEPENDENCE ? 'bg-red-500/20' :
+                          'bg-indigo-500/20'}`}
+                    ></div>
+                    <Calendar className={`w-10 h-10 relative z-10
+                        ${season === Season.RAMADAN ? 'text-emerald-300' :
+                          season === Season.INDEPENDENCE ? 'text-red-300' :
+                          'text-indigo-300'}`}
+                    />
                 </div>
             </div>
         </div>
