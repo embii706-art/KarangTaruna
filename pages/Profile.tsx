@@ -21,8 +21,15 @@ const Profile: React.FC = () => {
     navigate('/login');
   };
 
-  const changeLanguage = (lng: string) => {
+  const changeLanguage = async (lng: string) => {
     i18n.changeLanguage(lng);
+    if (user) {
+        try {
+            await updateDoc(doc(db, "users", user.uid), { language: lng });
+        } catch (error) {
+            console.error("Failed to save language preference:", error);
+        }
+    }
   };
 
   const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
