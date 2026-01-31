@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { HashRouter as Router, Routes, Route, Link, useLocation, useNavigate } from 'react-router-dom';
-import { Home, Users, Wallet, Calendar, PieChart } from 'lucide-react';
+import { Home, Calendar, Wallet, User, Plus, FileText, ClipboardList } from 'lucide-react';
 import { onAuthStateChanged } from 'firebase/auth';
 import { auth } from './services/firebase';
 import { ThemeProvider } from './services/themeService';
@@ -37,50 +37,87 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     return () => unsubscribe();
   }, [navigate, location.pathname]);
 
-  // Hide navigation on auth pages and Profile page
-  const hideNav = ['/', '/login', '/register', '/profile'].includes(location.pathname);
+  // Hide navigation on auth pages
+  const hideNav = ['/', '/login', '/register'].includes(location.pathname);
 
+  // Revised Navigation Items
   const navItems = [
     { label: 'Home', icon: Home, path: '/dashboard' },
-    { label: 'Anggota', icon: Users, path: '/members' },
-    { label: 'Keuangan', icon: Wallet, path: '/finance' },
-    { label: 'Proker', icon: Calendar, path: '/events' },
-    { label: 'Laporan', icon: PieChart, path: '/reports' },
+    { label: 'My Task', icon: ClipboardList, path: '/events' },
+    // Center button is handled separately
+    { label: 'Payment', icon: Wallet, path: '/finance' },
+    { label: 'Profile', icon: User, path: '/profile' },
   ];
 
   if (loading) return null;
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 max-w-md mx-auto relative shadow-2xl shadow-black overflow-hidden min-w-[320px]">
-      <div className={`h-full overflow-y-auto no-scrollbar ${!hideNav ? 'pb-28' : ''}`}>
+      <div className={`h-full overflow-y-auto no-scrollbar ${!hideNav ? 'pb-40' : ''}`}>
         {children}
       </div>
       
-      {/* Floating Glass Dock Navigation */}
+      {/* Floating Dock Navigation */}
       {!hideNav && (
         <div className="fixed bottom-6 left-1/2 -translate-x-1/2 w-[calc(100%-32px)] max-w-sm z-50">
-            <nav className="glass-card rounded-[24px] px-2 py-3 flex justify-between items-center shadow-lg shadow-indigo-500/10 border border-white/10">
-                {navItems.map((item) => {
-                const isActive = location.pathname === item.path;
-                return (
-                    <Link
-                    key={item.path}
-                    to={item.path}
-                    className="flex flex-col items-center justify-center p-2 relative group flex-1"
-                    >
-                    <div className={`relative z-10 p-2 rounded-xl transition-all duration-300 ${isActive ? 'bg-white/10 text-white shadow-[0_0_15px_rgba(255,255,255,0.3)]' : 'text-slate-400 hover:text-white'}`}>
-                        <item.icon
-                            className={`w-5 h-5 transition-transform duration-300 ${isActive ? 'scale-110' : 'group-hover:scale-110'}`}
-                            strokeWidth={isActive ? 2.5 : 2}
-                        />
+            <div className="relative">
+                {/* Main Bar */}
+                <nav className="glass-card rounded-[24px] px-6 py-4 flex justify-between items-center shadow-lg shadow-indigo-500/10 border border-white/10 relative z-10">
+
+                    {/* Left Items */}
+                    <div className="flex gap-8">
+                        {navItems.slice(0, 2).map((item) => {
+                            const isActive = location.pathname === item.path;
+                            return (
+                                <Link
+                                    key={item.path}
+                                    to={item.path}
+                                    className={`flex flex-col items-center gap-1 transition-colors duration-300 ${isActive ? 'text-indigo-400' : 'text-slate-400 hover:text-slate-200'}`}
+                                >
+                                    <item.icon
+                                        className={`w-6 h-6 ${isActive ? 'fill-current' : ''}`}
+                                        strokeWidth={isActive ? 2 : 2}
+                                    />
+                                    <span className="text-[10px] font-medium">{item.label}</span>
+                                </Link>
+                            );
+                        })}
                     </div>
-                    {isActive && (
-                        <span className="absolute -bottom-1 w-1 h-1 bg-indigo-400 rounded-full animate-pulse shadow-[0_0_8px_#818cf8]"></span>
-                    )}
-                    </Link>
-                );
-                })}
-            </nav>
+
+                    {/* Spacer for Center Button */}
+                    <div className="w-12"></div>
+
+                    {/* Right Items */}
+                    <div className="flex gap-8">
+                        {navItems.slice(2, 4).map((item) => {
+                            const isActive = location.pathname === item.path;
+                            return (
+                                <Link
+                                    key={item.path}
+                                    to={item.path}
+                                    className={`flex flex-col items-center gap-1 transition-colors duration-300 ${isActive ? 'text-indigo-400' : 'text-slate-400 hover:text-slate-200'}`}
+                                >
+                                    <item.icon
+                                        className={`w-6 h-6 ${isActive ? 'fill-current' : ''}`}
+                                        strokeWidth={isActive ? 2 : 2}
+                                    />
+                                    <span className="text-[10px] font-medium">{item.label}</span>
+                                </Link>
+                            );
+                        })}
+                    </div>
+                </nav>
+
+                {/* Floating Center Button */}
+                <div className="absolute left-1/2 -translate-x-1/2 -top-6 z-20">
+                    <button
+                        onClick={() => navigate('/events')}
+                        className="w-14 h-14 bg-[#1e293b] rounded-full flex items-center justify-center text-white shadow-[0_4px_20px_rgba(0,0,0,0.4)] border-4 border-slate-950 active:scale-95 transition-transform"
+                    >
+                        <Plus className="w-6 h-6" strokeWidth={3} />
+                    </button>
+                </div>
+            </div>
         </div>
       )}
     </div>
