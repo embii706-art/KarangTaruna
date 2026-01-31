@@ -33,14 +33,6 @@ const Members: React.FC = () => {
       setMembers(usersData);
     }, (error) => {
       console.error("Error fetching members:", error);
-      // Fallback/Mock data if permission denied or error
-      setMembers([
-          { id: '1', name: 'Budi Santoso', email: 'budi@example.com', role: MemberRole.CHAIRMAN, avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Budi', joinedAt: new Date().toISOString(), status: 'active' },
-          { id: '2', name: 'Siti Aminah', email: 'siti@example.com', role: MemberRole.TREASURER, avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Siti', joinedAt: new Date().toISOString(), status: 'active' },
-          { id: '3', name: 'Rahmat Hidayat', email: 'rahmat@example.com', role: MemberRole.MEMBER, avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Rahmat', joinedAt: new Date().toISOString(), status: 'active' },
-          { id: '4', name: 'Dewi Lestari', email: 'dewi@example.com', role: MemberRole.SECRETARY, avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Dewi', joinedAt: new Date().toISOString(), status: 'inactive' },
-          { id: '5', name: 'Agus Pratama', email: 'agus@example.com', role: MemberRole.MEMBER, avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Agus', joinedAt: new Date().toISOString(), status: 'active' }
-      ]);
     });
 
     // 2. Fetch current user role
@@ -240,10 +232,18 @@ const Members: React.FC = () => {
                 </div>
 
                 <div className="flex gap-2 w-full mt-1">
-                    <button className="flex-1 h-9 rounded-xl bg-slate-50 text-slate-600 flex items-center justify-center hover:bg-slate-100 transition-all active:scale-95">
+                    <button
+                        disabled={!member.phone}
+                        onClick={() => member.phone && window.open(`tel:${member.phone}`, '_self')}
+                        className="flex-1 h-9 rounded-xl bg-slate-50 text-slate-600 flex items-center justify-center hover:bg-slate-100 transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
                         <Phone className="w-4 h-4" />
                     </button>
-                    <button className="flex-1 h-9 rounded-xl bg-slate-50 text-slate-600 flex items-center justify-center hover:bg-slate-100 transition-all active:scale-95">
+                    <button
+                        disabled={!member.email}
+                        onClick={() => member.email && window.open(`mailto:${member.email}`, '_self')}
+                        className="flex-1 h-9 rounded-xl bg-slate-50 text-slate-600 flex items-center justify-center hover:bg-slate-100 transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
                         <Mail className="w-4 h-4" />
                     </button>
                 </div>

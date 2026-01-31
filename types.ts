@@ -15,6 +15,7 @@ export interface Member {
   joinedAt: string;
   status: 'active' | 'inactive' | 'pending';
   email?: string;
+  phone?: string;
 }
 
 export interface Transaction {
