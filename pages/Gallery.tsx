@@ -53,7 +53,11 @@ const Gallery: React.FC = () => {
         { method: 'POST', body: formData }
       );
 
-      if (!response.ok) throw new Error('Upload failed');
+      if (!response.ok) {
+          const errorData = await response.json().catch(() => ({}));
+          console.error("Cloudinary error:", errorData);
+          throw new Error('Upload failed');
+      }
       const data = await response.json();
       const photoURL = data.secure_url;
 
@@ -67,7 +71,7 @@ const Gallery: React.FC = () => {
 
     } catch (error) {
       console.error("Error uploading image:", error);
-      alert("Gagal mengupload foto. Pastikan koneksi internet lancar.");
+      alert("Gagal mengupload foto. Pastikan koneksi internet lancar dan coba lagi.");
     } finally {
       setUploading(false);
       if (fileInputRef.current) fileInputRef.current.value = '';

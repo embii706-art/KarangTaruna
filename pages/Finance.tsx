@@ -70,7 +70,7 @@ const Finance: React.FC = () => {
             
             <div className="relative z-10 text-center">
                 <p className="text-slate-400 font-medium mb-2">Total Saldo Aktif</p>
-                <h2 className="text-4xl font-bold mb-8 tracking-tight">Rp {(totalBalance/1000).toFixed(0)}rb</h2>
+                <h2 className="text-4xl font-bold mb-8 tracking-tight">Rp {totalBalance.toLocaleString('id-ID')}</h2>
                 
                 <div className="flex gap-4">
                     <div className="flex-1 bg-white/10 rounded-2xl p-3 backdrop-blur-sm">
@@ -78,14 +78,14 @@ const Finance: React.FC = () => {
                             <ArrowUpCircle className="w-4 h-4" />
                             <span className="text-xs font-bold uppercase">Pemasukan</span>
                         </div>
-                        <p className="font-bold text-lg">Rp {(totalIncome/1000).toFixed(0)}rb</p>
+                        <p className="font-bold text-lg">Rp {totalIncome.toLocaleString('id-ID')}</p>
                     </div>
                     <div className="flex-1 bg-white/10 rounded-2xl p-3 backdrop-blur-sm">
                         <div className="flex items-center justify-center gap-2 text-red-400 mb-1">
                             <ArrowDownCircle className="w-4 h-4" />
                             <span className="text-xs font-bold uppercase">Pengeluaran</span>
                         </div>
-                        <p className="font-bold text-lg">Rp {(totalExpense/1000).toFixed(0)}rb</p>
+                        <p className="font-bold text-lg">Rp {totalExpense.toLocaleString('id-ID')}</p>
                     </div>
                 </div>
             </div>
@@ -108,7 +108,7 @@ const Finance: React.FC = () => {
                         </div>
                         <div className="flex items-center gap-3">
                             <div className={`font-bold ${trx.type === 'income' ? 'text-green-600' : 'text-slate-900'}`}>
-                                {trx.type === 'income' ? '+' : '-'} Rp {(trx.amount / 1000).toFixed(0)}rb
+                                {trx.type === 'income' ? '+' : '-'} Rp {trx.amount.toLocaleString('id-ID')}
                             </div>
                             <button onClick={() => handleDelete(trx.id)} className="p-2 text-slate-300 hover:text-red-500 transition-all active:scale-95">
                                 <Trash2 className="w-4 h-4" />

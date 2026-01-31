@@ -58,23 +58,23 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
       
       {/* Bottom Navigation */}
       {!hideNav && (
-        <nav className="fixed bottom-0 w-full max-w-md bg-white border-t border-slate-100 pb-safe pt-2 px-6 flex justify-between items-center z-40 rounded-t-[32px] shadow-[0_-10px_40px_-15px_rgba(0,0,0,0.1)]">
+        <nav className="fixed bottom-0 w-full max-w-md bg-[#111111] pb-safe pt-4 px-8 flex justify-between items-center z-40 rounded-t-[40px] shadow-2xl min-h-[88px]">
             {navItems.map((item) => {
             const isActive = location.pathname === item.path;
             return (
                 <Link 
                 key={item.path} 
                 to={item.path} 
-                className="flex flex-col items-center justify-center p-3 gap-1 relative group flex-1"
+                className="flex flex-col items-center justify-center p-2 gap-1 relative group flex-1"
                 >
                 <div className={`transition-all duration-300 ${isActive ? '-translate-y-1' : ''}`}>
                     <item.icon 
-                        className={`w-6 h-6 transition-colors duration-300 ${isActive ? 'text-slate-900 fill-slate-900' : 'text-slate-300'}`}
-                        strokeWidth={isActive ? 2 : 2.5}
+                        className={`w-6 h-6 transition-colors duration-300 ${isActive ? 'text-white' : 'text-white/40'}`}
+                        strokeWidth={isActive ? 2.5 : 2}
                     />
                 </div>
                 {isActive && (
-                    <span className="absolute bottom-1 w-1 h-1 bg-slate-900 rounded-full animate-fade-in"></span>
+                    <span className="absolute bottom-2 w-1 h-1 bg-white rounded-full animate-fade-in"></span>
                 )}
                 </Link>
             );
