@@ -1,15 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import { Bell, Wallet, Users, Calendar, ArrowUpRight, Clock, MapPin, Heart, Flag } from 'lucide-react';
-import { Card, SectionHeader, Button } from '../components/UI';
+import { Bell, Wallet, Users, Calendar, ArrowUpRight, ArrowDownLeft, MoreHorizontal, ChevronRight, Activity, TrendingUp, Sparkles, CreditCard, Search, Folder, MoreVertical } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { auth, db } from '../services/firebase';
-import { collection, onSnapshot, query, where } from 'firebase/firestore';
-import { getTheme, AppTheme } from '../services/themeService';
+import { collection, onSnapshot, query, where, limit, orderBy } from 'firebase/firestore';
+import { useTheme } from '../services/themeService';
+import { Season } from '../types';
 
 const Dashboard: React.FC = () => {
   const navigate = useNavigate();
+  const { season } = useTheme();
   const user = auth.currentUser;
-  const theme = getTheme();
   
   const [stats, setStats] = useState({
     balance: 0,
@@ -17,7 +17,12 @@ const Dashboard: React.FC = () => {
     upcomingEvents: 0
   });
 
+  const [searchQuery, setSearchQuery] = useState('');
+  const [recentEvents, setRecentEvents] = useState<any[]>([]);
+
   useEffect(() => {
+    if (!user) return;
+
     // Firestore Listeners
     const unsubTrans = onSnapshot(collection(db, "transactions"), (snapshot) => {
       let bal = 0;
@@ -27,14 +32,24 @@ const Dashboard: React.FC = () => {
         else bal -= data.amount;
       });
       setStats(prev => ({ ...prev, balance: bal }));
+    }, (error) => {
+      console.error("Error fetching transactions:", error);
     });
 
     const unsubMembers = onSnapshot(collection(db, "users"), (snapshot) => {
       setStats(prev => ({ ...prev, memberCount: snapshot.size }));
+    }, (error) => {
+      console.error("Error fetching members:", error);
     });
 
-    const unsubEvents = onSnapshot(query(collection(db, "events"), where("status", "!=", "completed")), (snapshot) => {
-      setStats(prev => ({ ...prev, upcomingEvents: snapshot.size }));
+    // Events - Fetch upcoming
+    const unsubEvents = onSnapshot(collection(db, "events"), (snapshot) => {
+        const events = snapshot.docs.map(d => ({id: d.id, ...d.data()}))
+                        .filter((e: any) => e.status !== 'completed')
+                        .sort((a: any, b: any) => new Date(a.date).getTime() - new Date(b.date).getTime())
+                        .slice(0, 4); // Fetch 4 for grid
+        setStats(prev => ({ ...prev, upcomingEvents: events.length }));
+        setRecentEvents(events);
     });
 
     return () => {
@@ -42,191 +57,179 @@ const Dashboard: React.FC = () => {
       unsubMembers();
       unsubEvents();
     };
-  }, []);
-
-  // Generate Falling Particles based on theme
-  const renderParticles = () => {
-    if (theme.name === 'default') return null;
-    
-    const particles = [];
-    const count = 10;
-    const emoji = theme.assets.decoration;
-    
-    for (let i = 0; i < count; i++) {
-        const left = Math.random() * 100;
-        const delay = Math.random() * 5;
-        const duration = 5 + Math.random() * 5;
-        particles.push(
-            <div 
-                key={i} 
-                className="falling-item text-xl opacity-60"
-                style={{
-                    left: `${left}%`,
-                    animationDelay: `${delay}s`,
-                    animationDuration: `${duration}s`
-                }}
-            >
-                {emoji}
-            </div>
-        );
-    }
-    return <div className="fixed inset-0 pointer-events-none overflow-hidden h-screen z-0">{particles}</div>;
-  };
-
-  const SeasonalWidget: React.FC = () => {
-      if (theme.name === 'ramadan') {
-          return (
-              <div className="bg-gradient-to-r from-emerald-600 to-teal-800 rounded-[28px] p-5 text-white shadow-lg mb-6 relative overflow-hidden">
-                  <div className="absolute top-0 right-0 opacity-20 transform translate-x-4 -translate-y-4">
-                      <svg width="100" height="100" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C9.5 2 7.2 3 5.4 4.6C7.6 6.3 9 9 9 12C9 15 7.6 17.7 5.4 19.4C7.2 21 9.5 22 12 22C17.5 22 22 17.5 22 12S17.5 2 12 2Z" /></svg>
-                  </div>
-                  <div className="relative z-10">
-                      <div className="flex justify-between items-start mb-4">
-                          <div>
-                              <p className="text-emerald-100 text-xs font-bold uppercase tracking-wider mb-1">Ramadhan Kareem</p>
-                              <h3 className="text-2xl font-bold">Waktunya Berbagi</h3>
-                          </div>
-                          <span className="text-3xl">🕌</span>
-                      </div>
-                      <div className="grid grid-cols-2 gap-3">
-                          <div className="bg-white/10 backdrop-blur-sm p-3 rounded-xl flex items-center gap-3">
-                              <Clock className="w-5 h-5 text-emerald-200" />
-                              <div>
-                                  <p className="text-[10px] text-emerald-200 uppercase">Maghrib</p>
-                                  <p className="font-bold">17:54</p>
-                              </div>
-                          </div>
-                          <button onClick={() => navigate('/finance')} className="bg-white text-emerald-800 p-3 rounded-xl font-bold text-sm flex items-center justify-center gap-2 hover:bg-emerald-50 transition-all active:scale-95">
-                              <Heart className="w-4 h-4 fill-emerald-800" /> Donasi
-                          </button>
-                      </div>
-                  </div>
-              </div>
-          );
-      }
-      
-      if (theme.name === 'independence') {
-        return (
-            <div className="bg-gradient-to-r from-red-600 to-red-800 rounded-[28px] p-5 text-white shadow-lg mb-6 relative overflow-hidden">
-                <div className="absolute -right-4 top-0 opacity-20 text-9xl font-black">79</div>
-                <div className="relative z-10">
-                    <div className="flex items-center gap-2 mb-2">
-                        <Flag className="w-5 h-5 text-yellow-400 fill-yellow-400" />
-                        <span className="font-bold text-red-100">Dirgahayu Indonesia</span>
-                    </div>
-                    <h3 className="text-2xl font-bold mb-4 leading-tight">Semangat Kemerdekaan!</h3>
-                    <div className="flex gap-3">
-                        <Button variant="secondary" className="!py-2 !px-4 !text-xs h-10 bg-white text-red-600 hover:bg-red-50">Daftar Lomba</Button>
-                        <Button variant="outline" className="!py-2 !px-4 !text-xs h-10 border-white/30 text-white hover:bg-white/10">Jadwal Upacara</Button>
-                    </div>
-                </div>
-            </div>
-        );
-      }
-
-      if (theme.name === 'new_year') {
-         return (
-            <div className="bg-gradient-to-r from-indigo-900 via-purple-900 to-slate-900 rounded-[28px] p-5 text-white shadow-lg mb-6 relative overflow-hidden border border-white/10">
-                 <div className="relative z-10 text-center py-2">
-                     <p className="text-indigo-200 text-xs font-bold uppercase tracking-widest mb-1">Welcome</p>
-                     <h3 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-yellow-200 to-yellow-500">2026</h3>
-                     <p className="text-sm text-slate-300 mt-2 mb-4">Mulai lembaran baru dengan semangat baru.</p>
-                     <Button className="w-full bg-white text-indigo-900 hover:bg-indigo-50">Buat Resolusi Organisasi</Button>
-                 </div>
-            </div>
-         );
-      }
-
-      // Default Greeting
-      return null;
-  };
+  }, [user]);
 
   return (
-    <div className={`min-h-screen ${theme.colors.background} transition-colors duration-500`}>
-      {renderParticles()}
-      
-      <div className="pt-4 px-4 space-y-6 animate-fade-in relative z-10">
+    <div className="pt-8 px-6 pb-32 space-y-6 animate-fade-in relative z-10">
+
+        {/* Decorative Background Mesh */}
+        <div className={`fixed top-0 left-0 w-full h-[500px] opacity-30 pointer-events-none -z-10 blur-3xl transition-colors duration-1000
+            ${season === Season.RAMADAN ? 'bg-emerald-900' : season === Season.INDEPENDENCE ? 'bg-red-900' : 'mesh-gradient'}`}
+        ></div>
+
         {/* Header */}
-        <div className="flex justify-between items-center">
+        <div className="flex justify-between items-start">
+          <div>
+            <h1 className="text-2xl font-bold text-white tracking-tight flex items-center gap-2">
+              Hi {user?.displayName?.split(' ')[0] || 'Member'}!
+            </h1>
+            <p className="text-slate-400 font-medium text-sm mt-1">Good Morning</p>
+          </div>
           <div 
-            onClick={() => navigate('/profile')}
-            className="flex items-center gap-3 cursor-pointer group p-1 rounded-2xl hover:bg-black/5 transition-colors active:scale-95"
+            onClick={() => navigate('/notifications')}
+            className="relative cursor-pointer group p-2 rounded-full hover:bg-white/10 transition-all active:scale-95"
           >
-            <div className={`w-12 h-12 rounded-full flex items-center justify-center overflow-hidden border-2 ${theme.name === 'default' ? 'border-slate-200' : 'border-white/50'}`}>
-               {user?.photoURL ? <img src={user.photoURL} alt="Avatar" className="w-full h-full object-cover"/> : <span className="text-xs font-bold text-slate-500">KT</span>}
-            </div>
-            <div>
-              <p className={`text-sm font-medium ${theme.name !== 'default' ? 'text-slate-500' : 'text-slate-500'}`}>Halo, {user?.displayName?.split(' ')[0]}</p>
-              <h1 className="text-xl font-bold text-slate-900 flex items-center gap-1">
-                 {theme.name === 'independence' ? 'Merdeka! 🇮🇩' : theme.name === 'ramadan' ? 'Marhaban 🌙' : 'KARTEJI'}
-              </h1>
-            </div>
+            <Bell className="w-6 h-6 text-white" />
+            <div className="absolute top-2 right-2.5 w-2 h-2 bg-red-500 rounded-full shadow-[0_0_8px_#ef4444]"></div>
           </div>
-          <Button variant="ghost" className="rounded-full border border-slate-200 w-12 h-12 !p-0 flex items-center justify-center bg-white shadow-sm">
-            <Bell className="w-5 h-5 text-slate-700" />
-          </Button>
         </div>
 
-        {/* Seasonal Widget (Conditional) */}
-        <SeasonalWidget />
+        {/* Search Bar */}
+        <div className="relative">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
+            <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search projects..."
+                className="w-full bg-white/5 border border-white/10 rounded-[20px] py-4 pl-12 pr-4 text-white placeholder-slate-400 focus:outline-none focus:bg-white/10 focus:border-indigo-500/50 transition-all"
+            />
+        </div>
 
-        {/* Standard Hero Card / Saldo */}
-        {theme.name === 'default' && (
-            <div className={`${theme.colors.cardBg} rounded-[32px] p-6 text-white shadow-xl relative overflow-hidden transition-colors duration-500`}>
-                <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full -mr-10 -mt-10 blur-2xl"></div>
-                <div className="relative z-10">
-                <p className="text-white/60 font-medium mb-1">Total Kas KARTEJI</p>
-                <h2 className="text-4xl font-bold mb-6">Rp {(stats.balance / 1000).toFixed(0)}rb</h2>
-                
-                <div className="flex gap-3">
-                    <button 
+        {/* Welcome Banner */}
+        <div className="glass-card rounded-[32px] p-6 relative overflow-hidden border border-white/10">
+            <div className="flex justify-between items-center relative z-10">
+                <div className="max-w-[60%]">
+                    <h2 className="text-lg font-bold text-white mb-2 leading-tight">Welcome!<br/>Let's schedule your projects</h2>
+                </div>
+                {/* Illustration Placeholder */}
+                <div className={`w-24 h-24 rounded-full flex items-center justify-center relative transition-colors duration-500
+                    ${season === Season.RAMADAN ? 'bg-gradient-to-br from-emerald-500/20 to-green-500/20' :
+                      season === Season.INDEPENDENCE ? 'bg-gradient-to-br from-red-500/20 to-white/20' :
+                      'bg-gradient-to-br from-indigo-500/20 to-purple-500/20'}`}
+                >
+                    <div className={`absolute inset-0 blur-xl rounded-full opacity-50
+                        ${season === Season.RAMADAN ? 'bg-emerald-500/20' :
+                          season === Season.INDEPENDENCE ? 'bg-red-500/20' :
+                          'bg-indigo-500/20'}`}
+                    ></div>
+                    <Calendar className={`w-10 h-10 relative z-10
+                        ${season === Season.RAMADAN ? 'text-emerald-300' :
+                          season === Season.INDEPENDENCE ? 'text-red-300' :
+                          'text-indigo-300'}`}
+                    />
+                </div>
+            </div>
+        </div>
+
+        {/* Ongoing Projects (Grid) */}
+        <div>
+            <div className="flex justify-between items-center mb-4">
+                <h3 className="text-lg font-bold text-white">Ongoing Projects</h3>
+                <button onClick={() => navigate('/events')} className="text-indigo-400 text-sm font-medium hover:text-indigo-300 transition-colors">view all</button>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+                {/* Finance Card (Always visible as a "Project") */}
+                {('Finance Management'.toLowerCase().includes(searchQuery.toLowerCase()) || searchQuery === '') && (
+                <div
                     onClick={() => navigate('/finance')}
-                    className="flex-1 bg-white text-slate-900 py-3 rounded-2xl font-bold text-sm hover:bg-slate-100 transition-all active:scale-95"
+                    className="bg-[#1e3a8a] rounded-[24px] p-5 relative overflow-hidden cursor-pointer active:scale-95 transition-all shadow-lg shadow-blue-900/20"
+                >
+                    <div className="flex justify-between items-start mb-6">
+                        <div className="text-xs text-blue-200 font-medium">{new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</div>
+                        <MoreVertical className="w-4 h-4 text-blue-300" />
+                    </div>
+
+                    <div className="mb-4">
+                        <div className="w-10 h-10 rounded-xl bg-blue-500/30 flex items-center justify-center mb-3 text-white">
+                            <Wallet className="w-5 h-5" />
+                        </div>
+                        <h4 className="font-bold text-white text-sm">Finance</h4>
+                        <p className="text-blue-200 text-xs mt-1">Management</p>
+                    </div>
+
+                    <div className="space-y-1">
+                        <div className="flex justify-between text-xs text-blue-200">
+                            <span>Progress</span>
+                            <span>{stats.balance > 0 ? '75%' : '0%'}</span>
+                        </div>
+                        <div className="w-full h-1 bg-blue-900/50 rounded-full overflow-hidden">
+                            <div className="h-full bg-blue-400 rounded-full w-3/4"></div>
+                        </div>
+                    </div>
+                </div>
+                )}
+
+                {/* Dashboard / Stats Card */}
+                {('Dashboard Overview'.toLowerCase().includes(searchQuery.toLowerCase()) || searchQuery === '') && (
+                 <div
+                    onClick={() => navigate('/reports')}
+                    className="bg-white/5 border border-white/5 rounded-[24px] p-5 relative overflow-hidden cursor-pointer active:scale-95 transition-all"
+                >
+                    <div className="flex justify-between items-start mb-6">
+                        <div className="text-xs text-slate-400 font-medium">{new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</div>
+                        <MoreVertical className="w-4 h-4 text-slate-500" />
+                    </div>
+
+                    <div className="mb-4">
+                         <div className="w-10 h-10 rounded-xl bg-orange-500/10 flex items-center justify-center mb-3 text-orange-400">
+                            <Activity className="w-5 h-5" />
+                        </div>
+                        <h4 className="font-bold text-white text-sm">Dashboard</h4>
+                        <p className="text-slate-400 text-xs mt-1">Overview</p>
+                    </div>
+
+                    <div className="space-y-1">
+                        <div className="flex justify-between text-xs text-slate-400">
+                            <span>Progress</span>
+                            <span>50%</span>
+                        </div>
+                        <div className="w-full h-1 bg-white/10 rounded-full overflow-hidden">
+                            <div className="h-full bg-orange-400 rounded-full w-1/2"></div>
+                        </div>
+                    </div>
+                </div>
+                )}
+
+                {/* Dynamic Event Cards */}
+                {recentEvents
+                    .filter(event =>
+                        event.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                        'Event'.toLowerCase().includes(searchQuery.toLowerCase())
+                    )
+                    .map((event, idx) => (
+                    <div
+                        key={idx}
+                        onClick={() => navigate('/events')}
+                        className="bg-white/5 border border-white/5 rounded-[24px] p-5 relative overflow-hidden cursor-pointer active:scale-95 transition-all"
                     >
-                    Cek Detail
-                    </button>
-                    <button className="flex-1 bg-white/10 text-white py-3 rounded-2xl font-bold text-sm backdrop-blur-md hover:bg-white/20 transition-all active:scale-95 border border-white/10">
-                    Bayar Iuran
-                    </button>
-                </div>
-                </div>
+                         <div className="flex justify-between items-start mb-6">
+                            <div className="text-xs text-slate-400 font-medium">{new Date(event.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</div>
+                            <MoreVertical className="w-4 h-4 text-slate-500" />
+                        </div>
+
+                        <div className="mb-4">
+                            <div className="w-10 h-10 rounded-xl bg-purple-500/10 flex items-center justify-center mb-3 text-purple-400">
+                                <Folder className="w-5 h-5" />
+                            </div>
+                            <h4 className="font-bold text-white text-sm truncate">{event.title}</h4>
+                            <p className="text-slate-400 text-xs mt-1 truncate">Event</p>
+                        </div>
+
+                         <div className="space-y-1">
+                            <div className="flex justify-between text-xs text-slate-400">
+                                <span>Progress</span>
+                                <span>30%</span>
+                            </div>
+                            <div className="w-full h-1 bg-white/10 rounded-full overflow-hidden">
+                                <div className="h-full bg-purple-400 rounded-full w-[30%]"></div>
+                            </div>
+                        </div>
+                    </div>
+                ))}
             </div>
-        )}
-
-        {/* Quick Menu */}
-        <div className="bg-white/60 backdrop-blur-xl p-4 rounded-[32px] border border-white/50 shadow-sm">
-          <div className="grid grid-cols-4 gap-4">
-            {[
-              { label: 'Anggota', icon: <Users className="w-6 h-6" />, path: '/members', color: 'bg-blue-50 text-blue-600' },
-              { label: 'Keuangan', icon: <Wallet className="w-6 h-6" />, path: '/finance', color: 'bg-green-50 text-green-600' },
-              { label: 'Kegiatan', icon: <Calendar className="w-6 h-6" />, path: '/events', color: 'bg-orange-50 text-orange-600' },
-              { label: 'Laporan', icon: <ArrowUpRight className="w-6 h-6" />, path: '/reports', color: 'bg-purple-50 text-purple-600' },
-            ].map((item, idx) => (
-              <div key={idx} onClick={() => navigate(item.path)} className="flex flex-col items-center gap-2 cursor-pointer group transition-transform active:scale-95">
-                <div className={`w-16 h-16 rounded-[24px] flex items-center justify-center ${item.color} shadow-sm`}>
-                  {item.icon}
-                </div>
-                <span className="text-xs font-semibold text-slate-600">{item.label}</span>
-              </div>
-            ))}
-          </div>
         </div>
-
-        {/* Recent Activities */}
-        <div className="pb-24">
-          <SectionHeader title="Statistik Singkat" />
-          <div className="grid grid-cols-2 gap-4">
-             <Card className="flex flex-col items-center justify-center text-center !py-8 bg-white border-slate-100">
-                 <h3 className={`text-3xl font-bold mb-1 ${theme.colors.accent}`}>{stats.upcomingEvents}</h3>
-                 <p className="text-xs font-semibold text-slate-500 uppercase">Agenda Aktif</p>
-             </Card>
-             <Card className="flex flex-col items-center justify-center text-center !py-8 bg-white border-slate-100">
-                 <h3 className={`text-3xl font-bold mb-1 ${theme.colors.accent}`}>{stats.memberCount}</h3>
-                 <p className="text-xs font-semibold text-slate-500 uppercase">Total Anggota</p>
-             </Card>
-          </div>
-        </div>
-      </div>
     </div>
   );
 };

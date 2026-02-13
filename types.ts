@@ -13,8 +13,9 @@ export interface Member {
   role: MemberRole;
   avatar: string;
   joinedAt: string;
-  status: 'active' | 'inactive';
+  status: 'active' | 'inactive' | 'pending';
   email?: string;
+  phone?: string;
 }
 
 export interface Transaction {
@@ -39,4 +40,15 @@ export interface NavItem {
   label: string;
   icon: any; // Using lucide-react icons
   path: string;
+}
+
+export enum AppTheme {
+  LIGHT = 'light',
+  DARK = 'dark'
+}
+
+export enum Season {
+  NONE = 'none',
+  RAMADAN = 'ramadan',
+  INDEPENDENCE = 'independence'
 }

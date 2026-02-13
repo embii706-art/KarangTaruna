@@ -25,10 +25,15 @@ const Register: React.FC = () => {
 
     try {
       // 1. Determine Role (First user = SUPER_ADMIN, others = MEMBER)
-      const q = query(collection(db, "users"), limit(1));
-      const querySnapshot = await getDocs(q);
-      const isFirstUser = querySnapshot.empty;
-      const assignedRole = isFirstUser ? MemberRole.SUPER_ADMIN : MemberRole.MEMBER;
+      let assignedRole = MemberRole.MEMBER;
+      try {
+        const q = query(collection(db, "users"), limit(1));
+        const querySnapshot = await getDocs(q);
+        const isFirstUser = querySnapshot.empty;
+        assignedRole = isFirstUser ? MemberRole.SUPER_ADMIN : MemberRole.MEMBER;
+      } catch (e) {
+        console.warn("Could not check existing users, defaulting to MEMBER role.", e);
+      }
 
       // 2. Create Auth User
       const userCredential = await createUserWithEmailAndPassword(auth, formData.email, formData.password);
@@ -41,15 +46,21 @@ const Register: React.FC = () => {
       });
 
       // 4. Create User Document in Firestore
-      await setDoc(doc(db, "users", user.uid), {
-        id: user.uid,
-        name: formData.name,
-        email: formData.email,
-        role: assignedRole,
-        avatar: user.photoURL,
-        joinedAt: new Date().toISOString(),
-        status: 'active'
-      });
+      try {
+        await setDoc(doc(db, "users", user.uid), {
+            id: user.uid,
+            name: formData.name,
+            email: formData.email,
+            role: assignedRole,
+            avatar: user.photoURL,
+            joinedAt: new Date().toISOString(),
+            status: 'active'
+        });
+      } catch (e) {
+          console.error("Error creating user document:", e);
+          // Allow flow to continue even if Firestore write fails (permission issue)
+          // The user is authenticated, so they can enter the app.
+      }
 
       navigate('/dashboard');
     } catch (err: any) {
